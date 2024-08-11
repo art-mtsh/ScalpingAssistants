@@ -216,7 +216,3 @@ if __name__ == '__main__':
 
     for thread in the_threads:
         thread.join()
-
-    print("Process ended.")
-
-    bot_thread.join()  # Ensure bot_thread is fully joined before ending
