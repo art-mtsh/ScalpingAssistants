@@ -1,9 +1,11 @@
 # telegram_bot.py
 import logging
+import time
 
 import telebot
 import os
 import chat_ids
+
 
 TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
 bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -16,6 +18,7 @@ existed_chat_ids = set(chat_ids.get_existed_chat_ids())
 
 @bot4.message_handler(commands=['start'])
 def send_welcome(message):
+    print(f"Received start command")
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
@@ -155,12 +158,18 @@ def send_photo_to_all_users(pic, msg):
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
 
-def start_bot():
-    import time
-    logging.basicConfig(filename='bot_log.log', level=logging.INFO)
-    logging.info("Bot polling started.")
-    while True:
-        bot4.polling(none_stop=True, timeout=10)  # Adjust timeout as needed
-        time.sleep(1)
 
-# bot4.polling()
+def start_bot():
+    print("Bot polling started.")
+
+    while True:
+        try:
+            bot4.polling(none_stop=True, timeout=10)  # Polling with a timeout
+            print("Polling is running...")
+            time.sleep(1)
+        except Exception as e:
+            print(f"Polling encountered an error: {e}")
+            time.sleep(5)  # Wait a bit before retrying in case of erro
+
+# if __name__ == "__main__":
+#     start_bot()
