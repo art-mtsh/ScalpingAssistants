@@ -154,6 +154,6 @@ def send_photo_to_all_users(pic, msg):
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
 
-def start_bot():
-    bot4.polling()
-# bot4.polling()
+# def start_bot():
+#     bot4.polling()
+bot4.polling()
