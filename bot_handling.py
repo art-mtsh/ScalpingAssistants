@@ -173,9 +173,6 @@ def send_photo_to_all_users(pic, msg):
 
 def start_bot():
     bot4.infinity_polling()
-    while True:
-        print('still polling')
-        time.sleep(5)
 
-# if __name__ == "__main__":
-#     start_bot()
+if __name__ == "__main__":
+    start_bot()

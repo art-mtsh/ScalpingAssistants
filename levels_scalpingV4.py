@@ -1,6 +1,8 @@
 import time
 from datetime import datetime
 from multiprocessing import Process, Manager
+from threading import Thread
+
 import telebot
 
 import chat_ids
@@ -136,48 +138,85 @@ def search(symbol, reload_time, time_log):
         time.sleep(reload_time)
 
 
+# if __name__ == '__main__':
+#
+#     # bot_process = Process(target=start_bot)
+#     # bot_process.start()
+#     # bot_process.join()
+#
+#     # time_log = int(input("Print time log? (def. 0): ") or 0)
+#     time_log = 1
+#
+#     print("\nGetting pairs...")
+#     pairs = get_pairs()
+#     print(pairs)
+#     print("")
+#
+#     reload_time = 60
+#
+#     manager = Manager()
+#     shared_queue = manager.Queue()
+#
+#     print(f"START at {datetime.now().strftime('%H:%M:%S')}, {len(pairs)} pairs, sleep time {float('{:.2f}'.format(reload_time))} s.")
+#     print("Sleep 20 seconds...")
+#     time.sleep(20)
+#
+#
+#     the_processes = []
+#
+#     bot_process = Process(target=start_bot)
+#     the_processes.append(bot_process)
+#
+#     for pair in pairs:
+#         process = Process(target=search, args=(pair, reload_time, time_log,))
+#         the_processes.append(process)
+#
+#     for pro in the_processes:
+#         pro.start()
+#
+#     for pro in the_processes:
+#         pro.join()
+#
+#
+#     for pro in the_processes:
+#         pro.close()
+#
+#     print("Process ended.")
+#
+#     bot_process.terminate()
+
 if __name__ == '__main__':
+    time_log = 1
 
-    bot_process = Process(target=start_bot)
-    bot_process.start()
-    bot_process.join()
+    print("\nGetting pairs...")
+    pairs = get_pairs()
+    print(pairs)
+    print("")
 
-    # time_log = int(input("Print time log? (def. 0): ") or 0)
-    # time_log = 1
-    #
-    # print("\nGetting pairs...")
-    # pairs = get_pairs()
-    # print(pairs)
-    # print("")
-    #
-    # reload_time = 60
-    #
-    # manager = Manager()
-    # shared_queue = manager.Queue()
-    #
-    # print(f"START at {datetime.now().strftime('%H:%M:%S')}, {len(pairs)} pairs, sleep time {float('{:.2f}'.format(reload_time))} s.")
-    # print("Sleep 20 seconds...")
-    # time.sleep(20)
-    #
-    #
-    # the_processes = []
+    reload_time = 60
 
-    # bot_process = Process(target=start_bot)
-    # the_processes.append(bot_process)
+    manager = Manager()
+    shared_queue = manager.Queue()
 
-    # for pair in pairs:
-    #     process = Process(target=search, args=(pair, reload_time, time_log,))
-    #     the_processes.append(process)
-    #
-    # for pro in the_processes:
-    #     pro.start()
-    #
-    # for pro in the_processes:
-    #     pro.join()
+    print(f"START at {datetime.now().strftime('%H:%M:%S')}, {len(pairs)} pairs, sleep time {float('{:.2f}'.format(reload_time))} s.")
+    print("Sleep 5 seconds...")
+    time.sleep(5)
 
-    # for pro in the_processes:
-    #     pro.close()
+    the_threads = []
 
-    # print("Process ended.")
+    bot_thread = Thread(target=start_bot)
+    the_threads.append(bot_thread)
 
-    # bot_process.terminate()
+    for pair in pairs:
+        thread = Thread(target=search, args=(pair, reload_time, time_log,))
+        the_threads.append(thread)
+
+    for thread in the_threads:
+        thread.start()
+
+    for thread in the_threads:
+        thread.join()
+
+    print("Process ended.")
+
+    bot_thread.join()  # Ensure bot_thread is fully joined before ending
