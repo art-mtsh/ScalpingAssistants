@@ -156,8 +156,10 @@ if __name__ == '__main__':
     time.sleep(20)
 
     the_processes = []
+
     bot_process = Process(target=start_bot)
     the_processes.append(bot_process)
+
     for pair in pairs:
         process = Process(target=search, args=(pair, reload_time, time_log,))
         the_processes.append(process)
@@ -168,9 +170,9 @@ if __name__ == '__main__':
     for pro in the_processes:
         pro.join()
 
-    for pro in the_processes:
-        pro.close()
-
-    print("Process ended.")
-
-    bot_process.terminate()
+    # for pro in the_processes:
+    #     pro.close()
+    #
+    # print("Process ended.")
+    #
+    # bot_process.terminate()

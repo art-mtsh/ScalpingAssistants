@@ -159,17 +159,19 @@ def send_photo_to_all_users(pic, msg):
             print(f"Failed to send photo to {chat_id}: {e}")
 
 
+# def start_bot():
+#     print("Bot polling started.")
+#
+#     while True:
+#         try:
+#             bot4.polling(none_stop=True, timeout=10)  # Polling with a timeout
+#             print("Polling is running...")
+#             time.sleep(1)
+#         except Exception as e:
+#             print(f"Polling encountered an error: {e}")
+#             time.sleep(5)  # Wait a bit before retrying in case of erro
+
 def start_bot():
-    print("Bot polling started.")
-
-    while True:
-        try:
-            bot4.polling(none_stop=True, timeout=10)  # Polling with a timeout
-            print("Polling is running...")
-            time.sleep(1)
-        except Exception as e:
-            print(f"Polling encountered an error: {e}")
-            time.sleep(5)  # Wait a bit before retrying in case of erro
-
+    bot4.polling(none_stop=True)
 # if __name__ == "__main__":
 #     start_bot()
