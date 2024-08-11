@@ -2,7 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, db
 
 # Path to your service account key file
-SERVICE_ACCOUNT_KEY = 'tgbots-8fc9c-firebase-adminsdk-d19h9-c54020bf1d.json'
+SERVICE_ACCOUNT_KEY = 'key.json'
 
 # Initialize the Firebase Admin SDK
 cred = credentials.Certificate(SERVICE_ACCOUNT_KEY)
@@ -22,3 +22,4 @@ def save_new_chat_id(new_chat_id=None):
         existed_chat_ids.append(new_chat_id)
     ref.set(existed_chat_ids)
 
+get_existed_chat_ids()
