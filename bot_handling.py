@@ -172,7 +172,7 @@ def send_photo_to_all_users(pic, msg):
 #             time.sleep(5)  # Wait a bit before retrying in case of erro
 
 def start_bot():
-    bot4.polling(none_stop=True)
+    bot4.infinity_polling()
     while True:
         print('still polling')
         time.sleep(5)

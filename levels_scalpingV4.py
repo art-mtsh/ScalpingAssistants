@@ -138,6 +138,10 @@ def search(symbol, reload_time, time_log):
 
 if __name__ == '__main__':
 
+    bot_process = Process(target=start_bot)
+    bot_process.start()
+    bot_process.join()
+
     # time_log = int(input("Print time log? (def. 0): ") or 0)
     time_log = 1
 
@@ -155,10 +159,11 @@ if __name__ == '__main__':
     print("Sleep 20 seconds...")
     time.sleep(20)
 
+
     the_processes = []
 
-    bot_process = Process(target=start_bot)
-    the_processes.append(bot_process)
+    # bot_process = Process(target=start_bot)
+    # the_processes.append(bot_process)
 
     for pair in pairs:
         process = Process(target=search, args=(pair, reload_time, time_log,))
@@ -169,6 +174,8 @@ if __name__ == '__main__':
 
     for pro in the_processes:
         pro.join()
+
+
 
     # for pro in the_processes:
     #     pro.close()
