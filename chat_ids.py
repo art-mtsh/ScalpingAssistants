@@ -21,4 +21,3 @@ def save_new_chat_id(new_chat_id=None):
     if new_chat_id and new_chat_id not in existed_chat_ids:
         existed_chat_ids.append(new_chat_id)
     ref.set(existed_chat_ids)
-

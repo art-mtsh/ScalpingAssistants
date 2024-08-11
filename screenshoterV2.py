@@ -82,12 +82,12 @@ def screenshoter_send(symbol, type, level, msg):
     
     # SAVE AND SEND
     plt.savefig(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
-    pic = open(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb')
-    # bot4.send_photo(662482931, pic, msg, parse_mode="HTML")
+    # pic = open(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb')
 
     for chat_id in existed_chat_ids:
         try:
-            bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
+            with open(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
+                bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
 
