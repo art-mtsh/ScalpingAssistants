@@ -4,6 +4,7 @@ import requests
 import telebot
 import os
 import chat_ids
+from bot_handling import disclaimer
 
 TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
 bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -145,7 +146,7 @@ def get_pairs():
 {len(result)}/{len(sorted_res)} інструментів взято в роботу.
 Частота проходу по кожному з них - 1 хвилина.
 
-<i>Усі повідомлення тут - безкоштовна інформація. Ніяких рекомендацій чи закликів до дій на фінансових ринках!</i>
+{disclaimer}
 """
 
     for chat_id in existed_chat_ids:

@@ -71,7 +71,7 @@ def search(symbol, reload_time, time_log):
                                                 msg = f"""
 {market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
 
-<i>Повідомлення безкоштовне, інформаційне і не є торговою рекомендацією</i>
+<i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
                                                 screenshoter_send(symbol, market_type, item[0], msg)
@@ -108,7 +108,7 @@ def search(symbol, reload_time, time_log):
                                                 msg = f"""
 {market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
 
-<i>Повідомлення безкоштовне, інформаційне і не є торговою рекомендацією</i>
+<i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
                                                 screenshoter_send(symbol, market_type, item[0], msg)
