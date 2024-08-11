@@ -1,4 +1,5 @@
 # telegram_bot.py
+import logging
 
 import telebot
 import os
@@ -154,6 +155,12 @@ def send_photo_to_all_users(pic, msg):
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
 
-# def start_bot():
-#     bot4.polling()
-bot4.polling()
+def start_bot():
+    import time
+    logging.basicConfig(filename='bot_log.log', level=logging.INFO)
+    logging.info("Bot polling started.")
+    while True:
+        bot4.polling(none_stop=True, timeout=10)  # Adjust timeout as needed
+        time.sleep(1)
+
+# bot4.polling()
