@@ -1,3 +1,5 @@
+import glob
+import os
 import time
 from datetime import datetime
 from multiprocessing import Process, Manager
@@ -137,55 +139,19 @@ def search(symbol, reload_time, time_log):
 
         time.sleep(reload_time)
 
+def clean_old_files(directory, prefix='FT', extension='.png'):
+    pattern = os.path.join(directory, f"{prefix}*{extension}")
+    files_to_remove = glob.glob(pattern)
+    print(f'Files to remove {files_to_remove}')
+    for file_path in files_to_remove:
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            print(f"Failed to remove file {file_path}: {e}")
 
-# if __name__ == '__main__':
-#
-#     # bot_process = Process(target=start_bot)
-#     # bot_process.start()
-#     # bot_process.join()
-#
-#     # time_log = int(input("Print time log? (def. 0): ") or 0)
-#     time_log = 1
-#
-#     print("\nGetting pairs...")
-#     pairs = get_pairs()
-#     print(pairs)
-#     print("")
-#
-#     reload_time = 60
-#
-#     manager = Manager()
-#     shared_queue = manager.Queue()
-#
-#     print(f"START at {datetime.now().strftime('%H:%M:%S')}, {len(pairs)} pairs, sleep time {float('{:.2f}'.format(reload_time))} s.")
-#     print("Sleep 20 seconds...")
-#     time.sleep(20)
-#
-#
-#     the_processes = []
-#
-#     bot_process = Process(target=start_bot)
-#     the_processes.append(bot_process)
-#
-#     for pair in pairs:
-#         process = Process(target=search, args=(pair, reload_time, time_log,))
-#         the_processes.append(process)
-#
-#     for pro in the_processes:
-#         pro.start()
-#
-#     for pro in the_processes:
-#         pro.join()
-#
-#
-#     for pro in the_processes:
-#         pro.close()
-#
-#     print("Process ended.")
-#
-#     bot_process.terminate()
 
 if __name__ == '__main__':
+    clean_old_files('.')
     time_log = 1
 
     print("\nGetting pairs...")

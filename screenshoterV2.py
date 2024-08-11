@@ -88,14 +88,15 @@ def screenshoter_send(symbol, type, level, msg):
         try:
             with open(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
                 bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
+                pic.close()
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
 
     # CLEANING
-    pic.close()
-    remove(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png')
-    plt.cla()
-    plt.clf()
+    # pic.close()
+    # remove(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png')
+    # plt.cla()
+    # plt.clf()
 
 
 # screenshoter_send('BAKEUSDT', "f", 0.3130, 'MESSAGE')
