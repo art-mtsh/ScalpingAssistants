@@ -22,4 +22,3 @@ def save_new_chat_id(new_chat_id=None):
         existed_chat_ids.append(new_chat_id)
     ref.set(existed_chat_ids)
 
-get_existed_chat_ids()

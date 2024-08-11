@@ -157,6 +157,6 @@ def get_pairs():
 
     return result
 
-
-if __name__ == '__main__':
-    print(get_pairs())
+#
+# if __name__ == '__main__':
+#     print(get_pairs())
