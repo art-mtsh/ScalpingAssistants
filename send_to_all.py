@@ -50,7 +50,7 @@ def maintance_end():
 def send_message_to_all():
     for chat_id in existed_chat_ids:
         try:
-            msg = '...'
+            msg = 'Час на сервері буде актуалізовано з наступним перезапуском'
             bot4.send_message(chat_id, msg)
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
