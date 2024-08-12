@@ -160,7 +160,7 @@ def get_pairs():
     #     except Exception as e:
     #         print(f"Failed to send photo to {chat_id}: {e}")
 
-    bot1.send_message(chat_id=662482931, text=msg)
+    bot1.send_message(chat_id=662482931, text=msg, parse_mode="HTML")
     return result
 
 #
