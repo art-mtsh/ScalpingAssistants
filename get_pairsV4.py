@@ -6,10 +6,15 @@ import os
 import chat_ids
 from bot_handling import disclaimer
 
-TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
-bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
+TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
 
-existed_chat_ids = set(chat_ids.get_existed_chat_ids())
+
+# TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
+# bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
+
+
+# existed_chat_ids = set(chat_ids.get_existed_chat_ids())
 
 """
 volatility = (max(day) - min(day) / 100%
@@ -130,7 +135,8 @@ def get_pairs():
 
     # pairs_to_message = "".join(f"{i[0]}, daily-vol: {i[2]}K, avg.ATR(1m): {i[3]}%\n" for i in sorted_res)
     # pairs_to_message = "".join(f"{i[0]}, {i[3]}%\n" for i in sorted_res)
-    result = [inner_list[0] for inner_list in sorted_res[:17]]
+    pairs_limit = 17
+    result = [inner_list[0] for inner_list in sorted_res[:pairs_limit]]
     # pairs_to_message = "".join(f"{i}\n" for i in result)
 
     msg = f"""
@@ -141,19 +147,20 @@ def get_pairs():
 Відфільтровано {len(sorted_res)} інструментів за параметрами (на 240 хвилинах):
 розмір tick до 0.05%, сер.ATR(m1) від 0.25%
 
-{len(result)}/{len(sorted_res)} інструментів взято в роботу. Макс. кількість обмежена до 17 (по топ ATR), для ефективної роботи сервера. 
+{len(result)}/{len(sorted_res)} інструментів взято в роботу. Макс. кількість обмежена до {pairs_limit} (по топ ATR), для ефективної роботи сервера. 
 
 Частота проходу по кожному з них ~1 хвилина.
 
 {disclaimer}
 """
 
-    for chat_id in existed_chat_ids:
-        try:
-            bot4.send_message(chat_id, msg, parse_mode="HTML")
-        except Exception as e:
-            print(f"Failed to send photo to {chat_id}: {e}")
+    # for chat_id in existed_chat_ids:
+    #     try:
+    #         bot4.send_message(chat_id, msg, parse_mode="HTML")
+    #     except Exception as e:
+    #         print(f"Failed to send photo to {chat_id}: {e}")
 
+    bot1.send_message(chat_id=662482931, text=msg)
     return result
 
 #
