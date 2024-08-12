@@ -131,7 +131,7 @@ def get_pairs():
     # pairs_to_message = "".join(f"{i[0]}, daily-vol: {i[2]}K, avg.ATR(1m): {i[3]}%\n" for i in sorted_res)
     # pairs_to_message = "".join(f"{i[0]}, {i[3]}%\n" for i in sorted_res)
     result = [inner_list[0] for inner_list in sorted_res[:17]]
-    pairs_to_message = "".join(f"{i}\n" for i in result)
+    # pairs_to_message = "".join(f"{i}\n" for i in result)
 
     msg = f"""
 Бот перезапущено о {datetime.now().strftime('%H:%M:%S')}.
@@ -143,7 +143,6 @@ def get_pairs():
 
 {len(result)}/{len(sorted_res)} інструментів взято в роботу. Макс. кількість обмежена до 17 (по топ ATR), для ефективної роботи сервера. 
 
-{pairs_to_message}
 Частота проходу по кожному з них ~1 хвилина.
 
 {disclaimer}
