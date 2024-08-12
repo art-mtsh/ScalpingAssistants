@@ -14,6 +14,10 @@ from get_pairsV4 import get_pairs
 from screenshoterV2 import screenshoter_send
 from bot_handling import start_bot
 
+
+TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
+
 TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
 bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
 
@@ -147,8 +151,10 @@ def clean_old_files(directory, prefix='FT', extension='.png'):
         try:
             os.remove(file_path)
         except Exception as e:
+            bot1.send_message(chat_id=662482931, text=f"Failed to remove file {file_path}: {e}")
             print(f"Failed to remove file {file_path}: {e}")
 
+    bot1.send_message(chat_id=662482931, text=f"{len(files_to_remove)} images successfully removed!")
 
 if __name__ == '__main__':
     clean_old_files('.')
