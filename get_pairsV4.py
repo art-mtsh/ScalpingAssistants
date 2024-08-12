@@ -9,13 +9,6 @@ from bot_handling import disclaimer
 TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
 bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
 
-
-# TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
-# bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
-
-
-# existed_chat_ids = set(chat_ids.get_existed_chat_ids())
-
 """
 volatility = (max(day) - min(day) / 100%
 volume daily = 20+ M
@@ -153,12 +146,6 @@ def get_pairs():
 
 {disclaimer}
 """
-
-    # for chat_id in existed_chat_ids:
-    #     try:
-    #         bot4.send_message(chat_id, msg, parse_mode="HTML")
-    #     except Exception as e:
-    #         print(f"Failed to send photo to {chat_id}: {e}")
 
     bot1.send_message(chat_id=662482931, text=msg, parse_mode="HTML")
     return result

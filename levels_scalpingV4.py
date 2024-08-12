@@ -18,8 +18,6 @@ from bot_handling import start_bot
 TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
 bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
 
-TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
-bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
 
 def search(symbol, reload_time, time_log):
     levels_f = {}
@@ -137,7 +135,7 @@ def search(symbol, reload_time, time_log):
                        f"Main file. Error in {symbol} data. Futures is n/a! \n"
                        f"-----------------> \n")
                 print(msg)
-                bot4.send_message(662482931, msg)
+                bot1.send_message(662482931, msg)
 
         time2 = time.perf_counter()
         time3 = time2 - time1

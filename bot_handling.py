@@ -138,6 +138,13 @@ def send_welcome(message):
 '''
     bot4.send_message(chat_id, msg, parse_mode="HTML")
 
+@bot4.message_handler(commands=['status'])
+def send_welcome(message):
+    chat_id = message.chat.id
+    if chat_id not in existed_chat_ids:
+        chat_ids.save_new_chat_id(chat_id)
+    bot4.send_message(message.chat.id, "Сервер запущено. Бот працює.", parse_mode="HTML")
+
 @bot4.message_handler(func=lambda message: True)
 def handle_message(message):
     bot4.send_message(message.chat.id, "Повідомлень я не розумію, сорян 🤷🏻‍♂️")
