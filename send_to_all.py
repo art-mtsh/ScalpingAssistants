@@ -22,6 +22,8 @@ def work_is_ended():
         try:
             msg = 'На сьогодні робота завершена.'
             bot4.send_message(chat_id, msg)
+            pic = open(f'work_done.webm', 'rb')
+            bot4.send_sticker(chat_id=chat_id, sticker=pic)
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
 
@@ -30,7 +32,7 @@ def maintance():
         try:
             msg = 'Технічні роботи на сервері...'
             bot4.send_message(chat_id, msg)
-            pic = open(f'tech.webm', 'rb')
+            pic = open(f'tech_start.webm', 'rb')
             bot4.send_sticker(chat_id=chat_id, sticker=pic)
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
@@ -45,5 +47,17 @@ def maintance_end():
         except Exception as e:
             print(f"Failed to send photo to {chat_id}: {e}")
 
+def send_message_to_all():
+    for chat_id in existed_chat_ids:
+        try:
+            msg = '...'
+            bot4.send_message(chat_id, msg)
+        except Exception as e:
+            print(f"Failed to send photo to {chat_id}: {e}")
+
 if __name__ == '__main__':
-    maintance()
+    pass
+    # work_is_ended()
+    # maintance()
+    # maintance_end()
+    # send_message_to_all()

@@ -131,7 +131,7 @@ def get_pairs():
     total_sorted = len(sorted_res)
     # pairs_to_message = "".join(f"{i[0]}, daily-vol: {i[2]}K, avg.ATR(1m): {i[3]}%\n" for i in sorted_res)
     pairs_to_message = "".join(f"{i[0]}, {i[3]}%\n" for i in sorted_res)
-    result = [inner_list[0] for inner_list in sorted_res[:15]]
+    result = [inner_list[0] for inner_list in sorted_res[:17]]
 
     msg = f"""
 Бот перезапущено о {datetime.now().strftime('%H:%M:%S')}.
@@ -143,8 +143,8 @@ def get_pairs():
 
 інструмент, сер.ATR(1m):
 {pairs_to_message}
-{len(result)}/{len(sorted_res)} інструментів взято в роботу. Макс. кількість обмежена до 15 (по топ ATR), для ефективної роботи сервера. 
-Частота проходу по кожному з них - 1 хвилина.
+{len(result)}/{len(sorted_res)} інструментів взято в роботу. Макс. кількість обмежена до 17 (по топ ATR), для ефективної роботи сервера. 
+Частота проходу по кожному з них ~1 хвилина.
 
 {disclaimer}
 """

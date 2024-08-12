@@ -142,7 +142,7 @@ def send_welcome(message):
 def handle_message(message):
     bot4.send_message(message.chat.id, "Повідомлень я не розумію, сорян 🤷🏻‍♂️")
     chat_id = message.chat.id
-    pic = open(f'sticker.webm', 'rb')
+    pic = open(f'pig.webm', 'rb')
     bot4.send_sticker(chat_id, pic)
 
 # Function to send a photo to all users

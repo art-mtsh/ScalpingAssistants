@@ -91,7 +91,7 @@ def screenshoter_send(symbol, type, level, msg):
         try:
             with open(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
                 bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
-                pic.close()
+            pic.close()
         except Exception as e:
             bot1.send_message(chat_id=662482931, text=f"Failed to send photo to {chat_id}: {e}")
             print(f"Failed to send photo to {chat_id}: {e}")
