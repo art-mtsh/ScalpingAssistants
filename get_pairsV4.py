@@ -128,7 +128,6 @@ def get_pairs():
     sorted_res = [inner_list for inner_list in pairs if inner_list[1] <= 0.05 and inner_list[3] >= 0.3]
     sorted_res = sorted(sorted_res, key=lambda x: x[3], reverse=True)
 
-    total_sorted = len(sorted_res)
     # pairs_to_message = "".join(f"{i[0]}, daily-vol: {i[2]}K, avg.ATR(1m): {i[3]}%\n" for i in sorted_res)
     # pairs_to_message = "".join(f"{i[0]}, {i[3]}%\n" for i in sorted_res)
     result = [inner_list[0] for inner_list in sorted_res[:17]]
@@ -139,7 +138,7 @@ def get_pairs():
 
 Отримано від Binance {len(ts_dict)} інструментів.
 
-Відфільтровано {total_sorted} інструментів за параметрами (на 240 хвилинах):
+Відфільтровано {len(sorted_res)} інструментів за параметрами (на 240 хвилинах):
 розмір tick до 0.05%, сер.ATR(m1) від 0.25%
 
 {len(result)}/{len(sorted_res)} інструментів взято в роботу. Макс. кількість обмежена до 17 (по топ ATR), для ефективної роботи сервера. 
