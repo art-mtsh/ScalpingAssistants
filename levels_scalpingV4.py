@@ -28,7 +28,7 @@ def search(symbol, reload_time, time_log):
     static_f = []
     static_s = []
 
-    c_room = 30
+    c_room = 30 
     d_room = 10
     atr_dis = 3
 
