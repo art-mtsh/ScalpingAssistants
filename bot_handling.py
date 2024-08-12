@@ -6,6 +6,8 @@ import telebot
 import os
 import chat_ids
 
+TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
 
 TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
 bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -35,8 +37,9 @@ f"""🇺🇦 Слава Україні!
 
 {disclaimer}
 """)
-
     bot4.send_message(chat_id, msg, parse_mode="HTML")
+    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на start')
+
 
 @bot4.message_handler(commands=['switch_to_ru'])
 def send_welcome(message):
@@ -46,6 +49,8 @@ def send_welcome(message):
 
     pic = open(f'funnyhaha.gif', 'rb')
     bot4.send_animation(chat_id, pic)
+    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на switch_to_ru')
+
 
 @bot4.message_handler(commands=['how_to_use'])
 def send_welcome(message):
@@ -74,6 +79,8 @@ def send_welcome(message):
 """
     pic = open(f'exam1.jpg', 'rb')
     bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
+    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на how_to_use')
+
 
 @bot4.message_handler(commands=['no_size'])
 def send_welcome(message):
@@ -87,6 +94,8 @@ f"""
 
 {disclaimer}
 """, parse_mode="HTML")
+    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на no_size')
+
 
 @bot4.message_handler(commands=['how_it_works'])
 def send_welcome(message):
@@ -137,6 +146,8 @@ def send_welcome(message):
 {disclaimer}
 '''
     bot4.send_message(chat_id, msg, parse_mode="HTML")
+    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на how_it_works')
+
 
 @bot4.message_handler(commands=['status'])
 def send_welcome(message):
@@ -144,6 +155,8 @@ def send_welcome(message):
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
     bot4.send_message(message.chat.id, "Сервер запущено. Бот працює.", parse_mode="HTML")
+    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на status')
+
 
 @bot4.message_handler(func=lambda message: True)
 def handle_message(message):
@@ -151,14 +164,8 @@ def handle_message(message):
     chat_id = message.chat.id
     pic = open(f'pig.webm', 'rb')
     bot4.send_sticker(chat_id, pic)
+    bot1.send_message(662482931, f'Користувач {chat_id} шось написав і отримав свиню')
 
-# Function to send a photo to all users
-def send_photo_to_all_users(pic, msg):
-    for chat_id in existed_chat_ids:
-        try:
-            bot4.send_photo(chat_id, pic, msg)
-        except Exception as e:
-            print(f"Failed to send photo to {chat_id}: {e}")
 
 def start_bot():
     bot4.infinity_polling()
