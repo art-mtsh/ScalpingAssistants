@@ -3,7 +3,6 @@ from multiprocessing import Process, Manager
 import requests
 import telebot
 import os
-import chat_ids
 from bot_handling import disclaimer
 
 TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
@@ -20,7 +19,6 @@ trades daily
 """
 
 excluded = []
-
 
 def calculate(dict_of_pairs,
               shared_queue,
@@ -132,21 +130,12 @@ def get_pairs():
     result = [inner_list[0] for inner_list in sorted_res[:pairs_limit]]
     # pairs_to_message = "".join(f"{i}\n" for i in result)
 
-    msg = f"""
-Бот перезапущено о {datetime.now().strftime('%H:%M:%S')}.
+    os.environ['BINANCE_SENT'] = str(len(ts_dict))
+    os.environ['FILTERED'] = str(len(sorted_res))
+    os.environ['IN_WORK'] = str(len(result))
+    os.environ['RELOAD_TIMESTAMP'] = str(datetime.now().strftime('%H:%M:%S'))
 
-Отримано від Binance {len(ts_dict)} інструментів.
-
-Відфільтровано {len(sorted_res)} інструментів за параметрами (на 240 хвилинах):
-розмір tick до 0.05%, сер.ATR(m1) від 0.25%
-
-{len(result)}/{len(sorted_res)} інструментів взято в роботу. Макс. кількість обмежена до {pairs_limit} (по топ ATR), для ефективної роботи сервера. 
-
-Частота проходу по кожному з них ~1 хвилина.
-
-{disclaimer}
-"""
-
+    msg = f"⚙️ Pairs got: {len(result)}/{len(sorted_res)}/{len(ts_dict)}."
     bot1.send_message(chat_id=662482931, text=msg, parse_mode="HTML")
     return result
 

@@ -20,6 +20,12 @@ bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
 # Event to signal threads to stop
 stop_event = Event()
 
+os.environ['BINANCE_SENT'] = ""
+os.environ['FILTERED'] = ""
+os.environ['IN_WORK'] = ""
+os.environ['RELOAD_TIMESTAMP'] = ""
+
+
 def search(symbol, reload_time, time_log):
     levels_f = {}
     levels_s = {}
@@ -36,9 +42,21 @@ def search(symbol, reload_time, time_log):
         time1 = time.perf_counter()
 
         for market_type in ["f", "s"]:
+            try:
+                depth = order_book(symbol, 500, market_type)
+            except Exception as e:
+                msg = (f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}")
+                print(msg)
+                bot1.send_message(662482931, msg)
 
-            depth = order_book(symbol, 500, market_type)
-            the_klines = klines(symbol, "1m", 100, market_type)
+            try:
+                the_klines = klines(symbol, "1m", 100, market_type)
+
+            except Exception as e:
+                msg = (f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}")
+                print(msg)
+                bot1.send_message(662482931, msg)
+
 
             if depth != None and the_klines != None:
 
@@ -136,6 +154,7 @@ def search(symbol, reload_time, time_log):
                 print(msg)
                 bot1.send_message(662482931, msg)
 
+
         time2 = time.perf_counter()
         time3 = time2 - time1
         time3 = float('{:.2f}'.format(time3))
@@ -160,38 +179,6 @@ def clean_old_files(directory, prefix='FT', extension='.png'):
     msg = f"⚙️ {len(files_to_remove)} images successfully removed..."
     bot1.send_message(chat_id=662482931, text=msg)
     print(msg)
-#
-# if __name__ == '__main__':
-#     clean_old_files('.')
-#     time_log = 1
-#
-#     print("\nGetting pairs...")
-#     pairs = get_pairs()
-#     print(f'Found {len(pairs)} pairs!')
-#
-#     reload_time = 60
-#
-#     manager = Manager()
-#     shared_queue = manager.Queue()
-#
-#     print(f"START at {datetime.now().strftime('%H:%M:%S')}, {len(pairs)} pairs, sleep time {float('{:.2f}'.format(reload_time))} s.")
-#     print("Sleep 5 seconds...")
-#     time.sleep(5)
-#
-#     the_threads = []
-#
-#     bot_thread = Thread(target=start_bot)
-#     the_threads.append(bot_thread)
-#
-#     for pair in pairs:
-#         thread = Thread(target=search, args=(pair, reload_time, time_log,))
-#         the_threads.append(thread)
-#
-#     for thread in the_threads:
-#         thread.start()
-#
-#     for thread in the_threads:
-#         thread.join()
 
 
 # ---------- NEW PROCESSOR ------------ #
@@ -199,7 +186,7 @@ def monitor_time_and_control_threads():
     global stop_event
     while True:
         current_minute = int(datetime.now().strftime('%M'))
-        if current_minute != 59 and current_minute != 29:
+        if current_minute != 59:
             msg = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. We starting..."
             bot1.send_message(chat_id=662482931, text=msg)
             print(msg)
@@ -207,14 +194,14 @@ def monitor_time_and_control_threads():
             stop_event.clear()
 
             clean_old_files('.')
-            reload_time = 60
+            reload_time = 58
             time_log = 1
 
             pairs = get_pairs()
-            msg = f'⚙️ Sleep 10 seconds and starting calculation threads...'
+            msg = f'⚙️ Sleep 30 seconds and starting calculation threads...'
             bot1.send_message(chat_id=662482931, text=msg)
             print(msg)
-            time.sleep(10)
+            time.sleep(30)
 
             the_threads = []
             for pair in pairs:
@@ -222,8 +209,13 @@ def monitor_time_and_control_threads():
                 thread.start()
                 the_threads.append(thread)
 
+            msg = f'⚙️ Threads is running...'
+            bot1.send_message(chat_id=662482931, text=msg)
+            print(msg)
+            time.sleep(30)
+
             # Monitor until minutes reach 58
-            while not int(datetime.now().strftime('%M')) == 59 and not int(datetime.now().strftime('%M')) == 29:
+            while not int(datetime.now().strftime('%M')) == 59:
                 time.sleep(1)
 
             # Signal threads to stop
@@ -239,6 +231,8 @@ def monitor_time_and_control_threads():
             msg = "⚙️ All thread have been stopped. Waiting to restart..."
             bot1.send_message(chat_id=662482931, text=msg)
             print(msg)
+
+            time.sleep(60)
 
         time.sleep(1)
 
