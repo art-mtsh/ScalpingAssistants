@@ -42,7 +42,7 @@ f"""🇺🇦 Слава Україні!
 
 
 @bot4.message_handler(commands=['switch_to_ru'])
-def send_welcome(message):
+def send_switch(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
@@ -53,7 +53,7 @@ def send_welcome(message):
 
 
 @bot4.message_handler(commands=['how_to_use'])
-def send_welcome(message):
+def send_htu(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
@@ -70,13 +70,6 @@ def send_welcome(message):
 - Сайз більший за середній обєм останніх 100 хвилин (m1).
 - Сайз знаходиться в 3х ATRах від поточної ціни.
 
-ВАЖЛИВО:
-1. Те, що бот прислав тобі картинку значить що цей об'єм був помічений на цьому екстремумі мінімум протягом хвилини!
-2. Відкривши термінал ти можеш не побачити цього об'єму в стакані лише через те, що між повідомленням і твоїм вводом тікера - сайз вже зняли (це десь секунд 5-15).
-3. Те, що відкривши термінал, ти ще бачиш цей значний сайз - НЕ значить що він монолітний і не зніметься!
-4. Щоб перевірити довговічність і вагу сайзу (для ринку) треба відкрити термінал і ПОСПОСТЕРІГАТИ за ним. 
-5. Якщо вона стоїть, не знімається навіть коли ціна в парі тіків від неї або навіть вдаряється об неї - значить що він робочий і від нього можна працювати.
-
 {disclaimer}
 """
     pic = open(f'exam1.jpg', 'rb')
@@ -85,7 +78,7 @@ def send_welcome(message):
 
 
 @bot4.message_handler(commands=['no_size'])
-def send_welcome(message):
+def send_nosize(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
@@ -100,7 +93,7 @@ f"""
 
 
 @bot4.message_handler(commands=['how_it_works'])
-def send_welcome(message):
+def send_hit(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
@@ -152,7 +145,7 @@ def send_welcome(message):
 
 
 @bot4.message_handler(commands=['status'])
-def send_welcome(message):
+def send_status(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
