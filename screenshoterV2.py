@@ -94,7 +94,7 @@ def screenshoter_send(symbol, type, level, msg):
             pic.close()
         except Exception as e:
             bot1.send_message(chat_id=662482931, text=f"Failed to send photo to {chat_id}: {e}")
-            print(f"Failed to send photo to {chat_id}: {e}")
+            print(f"⛔️ Failed to send photo to {chat_id}: {e}")
 
     # CLEANING
     # pic.close()

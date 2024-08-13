@@ -38,7 +38,7 @@ f"""🇺🇦 Слава Україні!
 {disclaimer}
 """)
     bot4.send_message(chat_id, msg, parse_mode="HTML")
-    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на start')
+    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на start')
 
 
 @bot4.message_handler(commands=['switch_to_ru'])
@@ -49,7 +49,7 @@ def send_switch(message):
 
     pic = open(f'funnyhaha.gif', 'rb')
     bot4.send_animation(chat_id, pic)
-    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на switch_to_ru')
+    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на switch_to_ru')
 
 
 @bot4.message_handler(commands=['how_to_use'])
@@ -74,7 +74,7 @@ def send_htu(message):
 """
     pic = open(f'exam1.jpg', 'rb')
     bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
-    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на how_to_use')
+    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на how_to_use')
 
 
 @bot4.message_handler(commands=['no_size'])
@@ -89,7 +89,7 @@ f"""
 
 {disclaimer}
 """, parse_mode="HTML")
-    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на no_size')
+    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на no_size')
 
 
 @bot4.message_handler(commands=['how_it_works'])
@@ -141,7 +141,7 @@ def send_hit(message):
 {disclaimer}
 '''
     bot4.send_message(chat_id, msg, parse_mode="HTML")
-    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на how_it_works')
+    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на how_it_works')
 
 
 @bot4.message_handler(commands=['status'])
@@ -150,7 +150,7 @@ def send_status(message):
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
     bot4.send_message(message.chat.id, "Сервер запущено. Бот працює.", parse_mode="HTML")
-    bot1.send_message(662482931, f'Користувач {chat_id} натиснув на status')
+    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на status')
 
 
 @bot4.message_handler(func=lambda message: True)
@@ -159,7 +159,7 @@ def handle_message(message):
     chat_id = message.chat.id
     pic = open(f'pig.webm', 'rb')
     bot4.send_sticker(chat_id, pic)
-    bot1.send_message(662482931, f'Користувач {chat_id} шось написав і отримав свиню')
+    bot1.send_message(662482931, f'🙂 Користувач {chat_id} шось написав і отримав свиню')
 
 
 def start_bot():

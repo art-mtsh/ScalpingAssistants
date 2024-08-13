@@ -3,8 +3,7 @@ import os
 import time
 from datetime import datetime
 from multiprocessing import Process, Manager
-from threading import Thread
-
+from threading import Thread, Event
 import telebot
 
 import chat_ids
@@ -18,6 +17,8 @@ from bot_handling import start_bot
 TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
 bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
 
+# Event to signal threads to stop
+stop_event = Event()
 
 def search(symbol, reload_time, time_log):
     levels_f = {}
@@ -30,7 +31,7 @@ def search(symbol, reload_time, time_log):
     d_room = 10 # вікно зверху і знизу стакану
     atr_dis = 3 # мультиплікатор відстані до сайзу в ATR
 
-    while True:
+    while not stop_event.is_set():
 
         time1 = time.perf_counter()
 
@@ -131,9 +132,7 @@ def search(symbol, reload_time, time_log):
                                     break
 
             elif market_type == "f" and (depth == None or the_klines == None):
-                msg = (f"-----------------> \n"
-                       f"Main file. Error in {symbol} data. Futures is n/a! \n"
-                       f"-----------------> \n")
+                msg = (f"⛔️ Main file. Error in {symbol} data. Futures is n/a!")
                 print(msg)
                 bot1.send_message(662482931, msg)
 
@@ -142,7 +141,7 @@ def search(symbol, reload_time, time_log):
         time3 = float('{:.2f}'.format(time3))
 
         if time_log > 0:
-            print(f"{symbol}: {time3} + {float('{:.2f}'.format(reload_time))} s, levels: {len(levels_f)}/{len(levels_s)}")
+            print(f"{datetime.now().strftime('%H:%M:%S')} {symbol}: {time3} + {float('{:.2f}'.format(reload_time))} s, levels: {len(levels_f)}/{len(levels_s)}")
             sys.stdout.flush()
 
         time.sleep(reload_time)
@@ -150,45 +149,103 @@ def search(symbol, reload_time, time_log):
 def clean_old_files(directory, prefix='FT', extension='.png'):
     pattern = os.path.join(directory, f"{prefix}*{extension}")
     files_to_remove = glob.glob(pattern)
-    print(f'Files to remove {files_to_remove}')
     for file_path in files_to_remove:
         try:
             os.remove(file_path)
         except Exception as e:
-            bot1.send_message(chat_id=662482931, text=f"Failed to remove file {file_path}: {e}")
-            print(f"Failed to remove file {file_path}: {e}")
+            msg = f"⚙️ Failed to remove file {file_path}: {e}"
+            bot1.send_message(chat_id=662482931, text=msg)
+            print(msg)
 
-    bot1.send_message(chat_id=662482931, text=f"{len(files_to_remove)} images successfully removed!")
+    msg = f"⚙️ {len(files_to_remove)} images successfully removed..."
+    bot1.send_message(chat_id=662482931, text=msg)
+    print(msg)
+#
+# if __name__ == '__main__':
+#     clean_old_files('.')
+#     time_log = 1
+#
+#     print("\nGetting pairs...")
+#     pairs = get_pairs()
+#     print(f'Found {len(pairs)} pairs!')
+#
+#     reload_time = 60
+#
+#     manager = Manager()
+#     shared_queue = manager.Queue()
+#
+#     print(f"START at {datetime.now().strftime('%H:%M:%S')}, {len(pairs)} pairs, sleep time {float('{:.2f}'.format(reload_time))} s.")
+#     print("Sleep 5 seconds...")
+#     time.sleep(5)
+#
+#     the_threads = []
+#
+#     bot_thread = Thread(target=start_bot)
+#     the_threads.append(bot_thread)
+#
+#     for pair in pairs:
+#         thread = Thread(target=search, args=(pair, reload_time, time_log,))
+#         the_threads.append(thread)
+#
+#     for thread in the_threads:
+#         thread.start()
+#
+#     for thread in the_threads:
+#         thread.join()
+
+
+# ---------- NEW PROCESSOR ------------ #
+def monitor_time_and_control_threads():
+    global stop_event
+    while True:
+        current_minute = int(datetime.now().strftime('%M'))
+        if current_minute != 59 and current_minute != 29:
+            msg = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. We starting..."
+            bot1.send_message(chat_id=662482931, text=msg)
+            print(msg)
+
+            stop_event.clear()
+
+            clean_old_files('.')
+            reload_time = 60
+            time_log = 1
+
+            pairs = get_pairs()
+            msg = f'⚙️ Sleep 10 seconds and starting calculation threads...'
+            bot1.send_message(chat_id=662482931, text=msg)
+            print(msg)
+            time.sleep(10)
+
+            the_threads = []
+            for pair in pairs:
+                thread = Thread(target=search, args=(pair, reload_time, time_log,))
+                thread.start()
+                the_threads.append(thread)
+
+            # Monitor until minutes reach 58
+            while not int(datetime.now().strftime('%M')) == 59 and not int(datetime.now().strftime('%M')) == 29:
+                time.sleep(1)
+
+            # Signal threads to stop
+            msg = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. Signal to stop threads sent..."
+            bot1.send_message(chat_id=662482931, text=msg)
+            print(msg)
+            stop_event.set()
+
+            # Wait for threads to finish
+            for thread in the_threads:
+                thread.join()
+
+            msg = "⚙️ All thread have been stopped. Waiting to restart..."
+            bot1.send_message(chat_id=662482931, text=msg)
+            print(msg)
+
+        time.sleep(1)
+
 
 if __name__ == '__main__':
-    clean_old_files('.')
-    time_log = 1
-
-    print("\nGetting pairs...")
-    pairs = get_pairs()
-    print(pairs)
-    print("")
-
-    reload_time = 60
-
-    manager = Manager()
-    shared_queue = manager.Queue()
-
-    print(f"START at {datetime.now().strftime('%H:%M:%S')}, {len(pairs)} pairs, sleep time {float('{:.2f}'.format(reload_time))} s.")
-    print("Sleep 5 seconds...")
-    time.sleep(5)
-
-    the_threads = []
 
     bot_thread = Thread(target=start_bot)
-    the_threads.append(bot_thread)
+    bot_thread.start()
 
-    for pair in pairs:
-        thread = Thread(target=search, args=(pair, reload_time, time_log,))
-        the_threads.append(thread)
-
-    for thread in the_threads:
-        thread.start()
-
-    for thread in the_threads:
-        thread.join()
+    monitor_time_and_control_threads()

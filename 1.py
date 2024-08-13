@@ -1,9 +1,6 @@
-import telebot
+from datetime import datetime
+import time
 
-TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-bot1 = telebot.TeleBot(TELEGRAM_TOKEN)
-
-# bot1.send_message(chat_id=662482931, text='test')
-bot1.send_message(chat_id=662482931, text="Технічні роботи на сервері.")
-pic = open(f'tech.webm', 'rb')
-bot1.send_sticker(chat_id=662482931, sticker=pic)
+while not int(datetime.now().strftime('%S')) == 59 and not int(datetime.now().strftime('%S')) == 29:
+    time.sleep(1)
+    print(datetime.now().strftime('%S'))
