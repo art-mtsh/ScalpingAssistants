@@ -30,6 +30,9 @@ def search(symbol, reload_time, time_log):
     levels_f = {}
     levels_s = {}
 
+    levels_f_volumes = {}
+    levels_s_volumes = {}
+
     static_f = []
     static_s = []
 
@@ -57,7 +60,6 @@ def search(symbol, reload_time, time_log):
                 print(msg)
                 bot1.send_message(662482931, msg)
 
-
             if depth != None and the_klines != None:
 
                 c_time, c_open, c_high, c_low, c_close, avg_vol = the_klines[0], the_klines[1], the_klines[2], the_klines[3], the_klines[4], the_klines[5]
@@ -67,6 +69,28 @@ def search(symbol, reload_time, time_log):
                 avg_atr_per = float('{:.2f}'.format(sum(avg_atr_per) / len(avg_atr_per)))
 
                 if len(c_high) == len(c_low):
+
+                    for i in range(110, len(depth) - 110):
+                        current_vol = depth[i][1]
+                        current_price = depth[i][0]
+                        previous_b_values = [depth[j][1] for j in range(i - 20, i)]  # values 20 before
+                        following_b_values = [depth[j][1] for j in range(i + 1, i + 21)]  # values 20 after
+
+                        distance = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
+
+                        # Check if current b is greater than all preceding and following 20 b-values
+                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance <= 0.6:
+
+                            levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
+
+                            if current_price not in levels_volumes.keys():
+                                levels_volumes.update({current_price: current_vol})
+                            else:
+                                msg = (f"🤚🏻 {symbol}({market_type}) found volume {current_vol} on price {current_price}")
+                                print(msg)
+                                bot1.send_message(662482931, msg)
+                                levels_volumes.pop(current_price)
+
                     for i in range(2, len(c_low) - c_room):
                         now_stamp = c_time[-i]
 
