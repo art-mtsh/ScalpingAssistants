@@ -120,7 +120,7 @@ def search(symbol, reload_time, time_log):
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
                                                 msg = f"""
 {market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
-size/avg.vol = 1/{round(item[1] / avg_vol, 1)}
+avg.vol/size = 1/{round(item[1] / avg_vol, 1)}
 
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
@@ -161,7 +161,7 @@ size/avg.vol = 1/{round(item[1] / avg_vol, 1)}
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
                                                 msg = f"""
 {market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
-size/avg.vol = 1/{round(item[1] / avg_vol, 1)}
+avg.vol/size = 1/{round(item[1] / avg_vol, 1)}
 
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
