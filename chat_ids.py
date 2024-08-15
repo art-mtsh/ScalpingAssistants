@@ -30,6 +30,6 @@ def save_new_chat_id(new_chat_id=None):
 #     return None
 
 # Видалення None значень зі списку id's
-# ids = get_existed_chat_ids()
-# ids = [i for i in ids if i != None]
-# ref.set(ids)
+ids = get_existed_chat_ids()
+ids = [i for i in ids if i != None]
+ref.set(ids)

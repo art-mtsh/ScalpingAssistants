@@ -79,7 +79,7 @@ def search(symbol, reload_time, time_log):
                         distance = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
 
                         # Check if current b is greater than all preceding and following 20 b-values
-                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance <= 0.6:
+                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance <= 0.6 and current_vol >= avg_vol * 3:
 
                             levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
 
