@@ -121,7 +121,7 @@ def get_pairs():
     for pro in the_processes:
         pro.close()
 
-    sorted_res = [inner_list for inner_list in pairs if inner_list[1] <= 0.05 and inner_list[3] >= 0.3]
+    sorted_res = [inner_list for inner_list in pairs if inner_list[1] <= 0.05 and inner_list[3] >= 0.2]
     sorted_res = sorted(sorted_res, key=lambda x: x[3], reverse=True)
 
     # pairs_to_message = "".join(f"{i[0]}, daily-vol: {i[2]}K, avg.ATR(1m): {i[3]}%\n" for i in sorted_res)
