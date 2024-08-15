@@ -108,7 +108,7 @@ def search(symbol, reload_time, time_log):
                                     distance_per = abs(c_high[-i] - c_close[-1]) / (c_close[-1] / 100)
                                     distance_per = float('{:.2f}'.format(distance_per))
 
-                                    if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol:
+                                    if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 1.5:
                                     # if item[1] >= sorted(higher_sizes)[-2] * 2 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol:
 
                                         levels_dict = levels_f if market_type == "f" else levels_s
@@ -149,7 +149,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)}
                                     distance_per = abs(c_low[-i] - c_close[-1]) / (c_close[-1] / 100)
                                     distance_per = float('{:.2f}'.format(distance_per))
 
-                                    if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol:
+                                    if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 1.5:
                                     # if item[1] >= sorted(lower_sizes)[-2] * 2 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol:
 
                                         levels_dict = levels_f if market_type == "f" else levels_s
