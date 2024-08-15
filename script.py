@@ -60,6 +60,8 @@ def search(symbol, reload_time, time_log):
                 print(msg)
                 bot1.send_message(662482931, msg)
 
+            market_type_verbose = 'FUTURES' if market_type == 'f' else 'SPOT'
+
             if depth != None and the_klines != None:
 
                 c_time, c_open, c_high, c_low, c_close, avg_vol = the_klines[0], the_klines[1], the_klines[2], the_klines[3], the_klines[4], the_klines[5]
@@ -86,7 +88,7 @@ def search(symbol, reload_time, time_log):
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                msg = (f"🤚🏻 {symbol}({market_type}) found volume {current_vol} on price {current_price}")
+                                msg = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price}")
                                 print(msg)
                                 bot1.send_message(662482931, msg)
                                 levels_volumes.pop(current_price)
@@ -119,7 +121,7 @@ def search(symbol, reload_time, time_log):
                                             if levels_dict.get(c_high[-i]) == c_time[-i]:
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
                                                 msg = f"""
-{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
+{market_type_verbose} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
 avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)}
 
 <i>Повідомлення не є торговою рекомендацією.</i>
@@ -160,7 +162,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)}
                                             if levels_dict.get(c_low[-i]) == c_time[-i]:
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
                                                 msg = f"""
-{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
+{market_type_verbose} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
 avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)}
 
 <i>Повідомлення не є торговою рекомендацією.</i>
