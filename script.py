@@ -136,7 +136,6 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 @UA_sizes_bot
 """
                                                 screenshoter_send(symbol, market_type, item[0], message_for_screen)
-
                                                 if c_high[-i] not in static_dict:
                                                     static_dict.append(c_high[-i])
                                     break
