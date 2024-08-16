@@ -2,11 +2,9 @@ import glob
 import os
 import time
 from datetime import datetime
-from multiprocessing import Process, Manager
 from threading import Thread, Event
 import telebot
 
-import chat_ids
 from modules import klines, order_book
 import sys
 from get_pairsV4 import get_pairs
@@ -14,8 +12,8 @@ from screenshoterV2 import screenshoter_send
 from bot_handling import start_bot
 
 
-TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
+PERSONAL_TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
 
 # Event to signal threads to stop
 stop_event = Event()
@@ -48,17 +46,17 @@ def search(symbol, reload_time, time_log):
             try:
                 depth = order_book(symbol, 500, market_type)
             except Exception as e:
-                msg = (f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}")
-                print(msg)
-                bot1.send_message(662482931, msg)
+                personal_message = (f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}")
+                print(personal_message)
+                personal_bot.send_message(662482931, personal_message)
 
             try:
                 the_klines = klines(symbol, "1m", 100, market_type)
 
             except Exception as e:
-                msg = (f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}")
-                print(msg)
-                bot1.send_message(662482931, msg)
+                personal_message = (f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}")
+                print(personal_message)
+                personal_bot.send_message(662482931, personal_message)
 
             market_type_verbose = 'FUTURES' if market_type == 'f' else 'SPOT'
 
@@ -88,11 +86,10 @@ def search(symbol, reload_time, time_log):
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                msg = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price}. Distance to current price: {round(distance_to, 2)}%")
-                                print(msg)
+                                personal_message = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price}. Distance to current price: {round(distance_to, 2)}%")
                                 ch_id = [662482931, 317994467]
                                 for id in ch_id:
-                                    bot1.send_message(id, msg)
+                                    personal_bot.send_message(id, personal_message)
                                 levels_volumes.pop(current_price)
 
                     for i in range(2, len(c_low) - c_room):
@@ -121,14 +118,15 @@ def search(symbol, reload_time, time_log):
 
                                         else:
                                             if levels_dict.get(c_high[-i]) == c_time[-i]:
-                                                # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
+
                                                 if round(item[1] / avg_vol, 1) <= 3:
                                                     size_verb = '..common size'
                                                 elif round(item[1] / avg_vol, 1) <= 5:
                                                     size_verb = '..pretty big size 👌🏻'
                                                 else:
                                                     size_verb = '..huge size 💪🏻'
-                                                    msg = f"""
+
+                                                message_for_screen = f"""
 {market_type_verbose} #{symbol}
 {item[0]}(price) * <b>{int(item[1])}</b>(size) = ${int((item[0] * item[1]) / 1000)}K
 distance to size = {distance_per}%
@@ -137,14 +135,10 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
-                                                screenshoter_send(symbol, market_type, item[0], msg)
+                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
 
                                                 if c_high[-i] not in static_dict:
-                                                    # bot2.send_message(662482931, msg)
                                                     static_dict.append(c_high[-i])
-                                        # else:
-                                        # 	print(f"{symbol} level {c_high[-i]} duplicate")
-
                                     break
 
                         if c_low[-i] <= min(c_low[-1: -i - c_room: -1]):
@@ -170,14 +164,14 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 
                                         else:
                                             if levels_dict.get(c_low[-i]) == c_time[-i]:
-                                                # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
                                                 if round(item[1] / avg_vol, 1) <= 3:
                                                     size_verb = '..common size'
                                                 elif round(item[1] / avg_vol, 1) <= 5:
                                                     size_verb = '..pretty big size 👌🏻'
                                                 else:
                                                     size_verb = '..huge size 💪🏻'
-                                                msg = f"""
+
+                                                message_for_screen = f"""
 {market_type_verbose} #{symbol}
 {item[0]} (price) * <b>{int(item[1])}</b> (size) = ${int((item[0] * item[1]) / 1000)}K
 distance to size = {distance_per}%
@@ -186,19 +180,15 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
-                                                screenshoter_send(symbol, market_type, item[0], msg)
+                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
                                                 if c_low[-i] not in static_dict:
-                                                    # bot2.send_message(662482931, msg)
                                                     static_dict.append(c_low[-i])
-                                        # else:
-                                        # 	print(f"{symbol} level {c_low[-i]} duplicate")
-
                                     break
 
             elif market_type == "f" and (depth == None or the_klines == None):
-                msg = (f"⛔️ Main file. Error in {symbol} data. Futures is n/a!")
-                print(msg)
-                bot1.send_message(662482931, msg)
+                personal_message = (f"⛔️ Main file. Error in {symbol} data. Futures is n/a!")
+                print(personal_message)
+                personal_bot.send_message(662482931, personal_message)
 
 
         time2 = time.perf_counter()
@@ -218,13 +208,13 @@ def clean_old_files(directory, prefix='FT', extension='.png'):
         try:
             os.remove(file_path)
         except Exception as e:
-            msg = f"⚙️ Failed to remove file {file_path}: {e}"
-            bot1.send_message(chat_id=662482931, text=msg)
-            print(msg)
+            personal_message = f"⚙️ Failed to remove file {file_path}: {e}"
+            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            print(personal_message)
 
-    msg = f"⚙️ {len(files_to_remove)} images successfully removed..."
-    bot1.send_message(chat_id=662482931, text=msg)
-    print(msg)
+    personal_message = f"⚙️ {len(files_to_remove)} images successfully removed..."
+    personal_bot.send_message(chat_id=662482931, text=personal_message)
+    print(personal_message)
 
 
 # ---------- NEW PROCESSOR ------------ #
@@ -233,9 +223,9 @@ def monitor_time_and_control_threads():
     while True:
         current_minute = int(datetime.now().strftime('%M'))
         if current_minute != 59:
-            msg = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. We starting..."
-            bot1.send_message(chat_id=662482931, text=msg)
-            print(msg)
+            personal_message = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. We starting..."
+            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            print(personal_message)
 
             stop_event.clear()
 
@@ -244,9 +234,9 @@ def monitor_time_and_control_threads():
             time_log = 1
 
             pairs = get_pairs()
-            msg = f'⚙️ Sleep 30 seconds and starting calculation threads...'
-            bot1.send_message(chat_id=662482931, text=msg)
-            print(msg)
+            personal_message = f'⚙️ Sleep 30 seconds and starting calculation threads...'
+            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            print(personal_message)
             time.sleep(30)
 
             the_threads = []
@@ -255,9 +245,9 @@ def monitor_time_and_control_threads():
                 thread.start()
                 the_threads.append(thread)
 
-            msg = f'⚙️ Threads is running...'
-            bot1.send_message(chat_id=662482931, text=msg)
-            print(msg)
+            personal_message = f'⚙️ Threads is running...'
+            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            print(personal_message)
             time.sleep(30)
 
             # Monitor until minutes reach 58
@@ -265,18 +255,18 @@ def monitor_time_and_control_threads():
                 time.sleep(1)
 
             # Signal threads to stop
-            msg = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. Signal to stop threads sent..."
-            bot1.send_message(chat_id=662482931, text=msg)
-            print(msg)
+            personal_message = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. Signal to stop threads sent..."
+            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            print(personal_message)
             stop_event.set()
 
             # Wait for threads to finish
             for thread in the_threads:
                 thread.join()
 
-            msg = "⚙️ All thread have been stopped. Waiting to restart..."
-            bot1.send_message(chat_id=662482931, text=msg)
-            print(msg)
+            personal_message = "⚙️ All thread have been stopped. Waiting to restart..."
+            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            print(personal_message)
 
             time.sleep(60)
 

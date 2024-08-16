@@ -6,8 +6,8 @@ import os
 import chat_ids
 
 # --- TELEGRAM ---
-TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
+PERSONAL_TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
 
 TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
 bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -94,7 +94,7 @@ def screenshoter_send(symbol, type, level, msg):
             pic.close()
         except Exception as e:
             msg = f"⛔️ Failed to send photo to {chat_id}: {e}"
-            bot1.send_message(chat_id=662482931, text=msg)
+            personal_bot.send_message(chat_id=662482931, text=msg)
             print(msg)
 
     # CLEANING
