@@ -34,9 +34,9 @@ def search(symbol, reload_time, time_log):
     static_f = []
     static_s = []
 
-    c_room = 30 # кімната зліва
-    d_room = 10 # вікно зверху і знизу стакану
-    atr_dis = 3 # мультиплікатор відстані до сайзу в ATR
+    c_room = 30  # кімната зліва
+    d_room = 10  # вікно зверху і знизу стакану
+    atr_dis = 3  # мультиплікатор відстані до сайзу в ATR
 
     while not stop_event.is_set():
 
@@ -46,7 +46,7 @@ def search(symbol, reload_time, time_log):
             try:
                 depth = order_book(symbol, 500, market_type)
             except Exception as e:
-                personal_message = (f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}")
+                personal_message = f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}"
                 print(personal_message)
                 personal_bot.send_message(662482931, personal_message)
 
@@ -54,16 +54,16 @@ def search(symbol, reload_time, time_log):
                 the_klines = klines(symbol, "1m", 100, market_type)
 
             except Exception as e:
-                personal_message = (f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}")
+                personal_message = f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}"
                 print(personal_message)
                 personal_bot.send_message(662482931, personal_message)
 
             market_type_verbose = 'FUTURES' if market_type == 'f' else 'SPOT'
 
-            if depth != None and the_klines != None:
+            if depth is not None and the_klines is not None:
 
                 c_time, c_open, c_high, c_low, c_close, avg_vol = the_klines[0], the_klines[1], the_klines[2], the_klines[3], the_klines[4], the_klines[5]
-                depth = depth[1] # [ціна, об'єм]
+                depth = depth[1]  # [ціна, об'єм]
 
                 avg_atr_per = [(c_high[-c] - c_low[-c]) / (c_close[-c] / 100) for c in range(30)]
                 avg_atr_per = float('{:.2f}'.format(sum(avg_atr_per) / len(avg_atr_per)))
@@ -78,7 +78,6 @@ def search(symbol, reload_time, time_log):
 
                         distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
 
-                        # Check if current b is greater than all preceding and following 20 b-values
                         if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 2 and current_vol >= avg_vol * 3:
 
                             levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
@@ -86,15 +85,13 @@ def search(symbol, reload_time, time_log):
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                personal_message = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price}. Distance to current price: {round(distance_to, 2)}%")
-                                ch_id = [662482931, 317994467]
-                                for id in ch_id:
-                                    personal_bot.send_message(id, personal_message)
+                                personal_message = f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price}. Distance to current price: {round(distance_to, 2)}%"
+                                per_ids = [662482931, 317994467]
+                                for per_id in per_ids:
+                                    personal_bot.send_message(per_id, personal_message)
                                 levels_volumes.pop(current_price)
 
                     for i in range(2, len(c_low) - c_room):
-                        now_stamp = c_time[-i]
-
                         if c_high[-i] >= max(c_high[-1: -i - c_room: -1]):
                             for item in depth:
                                 # щільність знаходиться між 9-ю спочатку, 9-ю з кінця та ціна щільності == хаю
@@ -108,7 +105,6 @@ def search(symbol, reload_time, time_log):
                                     distance_per = float('{:.2f}'.format(distance_per))
 
                                     if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 2:
-                                    # if item[1] >= sorted(higher_sizes)[-2] * 2 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol:
 
                                         levels_dict = levels_f if market_type == "f" else levels_s
                                         static_dict = static_f if market_type == "f" else static_s
@@ -153,7 +149,6 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
                                     distance_per = float('{:.2f}'.format(distance_per))
 
                                     if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 2:
-                                    # if item[1] >= sorted(lower_sizes)[-2] * 2 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol:
 
                                         levels_dict = levels_f if market_type == "f" else levels_s
                                         static_dict = static_f if market_type == "f" else static_s
@@ -184,11 +179,10 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
                                                     static_dict.append(c_low[-i])
                                     break
 
-            elif market_type == "f" and (depth == None or the_klines == None):
-                personal_message = (f"⛔️ Main file. Error in {symbol} data. Futures is n/a!")
+            elif market_type == "f" and (depth is None or the_klines is None):
+                personal_message = f"⛔️ Main file. Error in {symbol} data. Futures is n/a!"
                 print(personal_message)
                 personal_bot.send_message(662482931, personal_message)
-
 
         time2 = time.perf_counter()
         time3 = time2 - time1
@@ -199,6 +193,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
             sys.stdout.flush()
 
         time.sleep(reload_time)
+
 
 def clean_old_files(directory, prefix='FT', extension='.png'):
     pattern = os.path.join(directory, f"{prefix}*{extension}")

@@ -1,8 +1,6 @@
 import telebot
 import matplotlib.pyplot as plt
-from os import remove
 import requests
-import os
 import chat_ids
 
 # --- TELEGRAM ---
@@ -14,15 +12,15 @@ bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
 
 existed_chat_ids = set(chat_ids.get_existed_chat_ids())
 
-def screenshoter_send(symbol, type, level, msg):
+
+def screenshoter_send(symbol, market_type, level, message_for_screen):
     
     r_length = 180
     
     futures_klines = f'https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=1m&limit={r_length}'
     spot_klines = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1m&limit={r_length}'
     
-    
-    klines = requests.get(futures_klines) if type == 'f' else requests.get(spot_klines)
+    klines = requests.get(futures_klines) if market_type == 'f' else requests.get(spot_klines)
 
     cOpen = []
     cHigh = []
@@ -46,7 +44,7 @@ def screenshoter_send(symbol, type, level, msg):
     ax.set_facecolor(bg_color)
 
     # Add text on the background (middle layer)
-    background_text = f'FUTURES' if type == "f" else  f'SPOT'
+    background_text = f'FUTURES' if type == "f" else f'SPOT'
     ax.text(0.5, 0.5, background_text, fontsize=100, color='grey', ha='center', va='center', alpha=0.2, transform=ax.transAxes)
 
     for i in range(len(cClose)):
@@ -90,7 +88,7 @@ def screenshoter_send(symbol, type, level, msg):
     for chat_id in existed_chat_ids:
         try:
             with open(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
-                bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
+                bot4.send_photo(chat_id, pic, message_for_screen, parse_mode="HTML")
             pic.close()
         except Exception as e:
             msg = f"⛔️ Failed to send photo to {chat_id}: {e}"
