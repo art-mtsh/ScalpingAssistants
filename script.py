@@ -85,7 +85,7 @@ def search(symbol, reload_time, time_log):
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                personal_message = (f"🤚🏻 {market_type_verbose} #{symbol}\n\n"
+                                personal_message = (f"🐋 {market_type_verbose} #{symbol}\n\n"
                                                     f"Size: {round(current_vol / avg_vol, 1)} x avg.vol\n"
                                                     f"On price: {current_price}\n"
                                                     f"Distance: {round(distance_to, 2)}%")
