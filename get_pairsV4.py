@@ -128,17 +128,22 @@ def get_pairs():
     # pairs_to_message = "".join(f"{i[0]}, {i[3]}%\n" for i in sorted_res)
     pairs_limit = 17
     result = [inner_list[0] for inner_list in sorted_res[:pairs_limit]]
-    # pairs_to_message = "".join(f"{i}\n" for i in result)
+    pairs_to_message = [[inner_list[0], inner_list[3]] for inner_list in sorted_res[:pairs_limit]]
+    pairs_to_message = "".join(f"{i[0]} - {i[1]}%\n" for i in pairs_to_message)
 
     os.environ['BINANCE_SENT'] = str(len(ts_dict))
     os.environ['FILTERED'] = str(len(sorted_res))
     os.environ['IN_WORK'] = str(len(result))
     os.environ['RELOAD_TIMESTAMP'] = str(datetime.now().strftime('%H:%M:%S'))
 
-    msg = f"⚙️ Pairs got: {len(result)}/{len(sorted_res)}/{len(ts_dict)}."
+    msg = f"""
+⚙️ Pairs got: {len(result)}/{len(sorted_res)}/{len(ts_dict)}.
+
+{pairs_to_message}
+"""
     bot1.send_message(chat_id=662482931, text=msg, parse_mode="HTML")
     return result
 
-#
+
 # if __name__ == '__main__':
 #     print(get_pairs())

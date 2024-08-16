@@ -120,9 +120,17 @@ def search(symbol, reload_time, time_log):
                                         else:
                                             if levels_dict.get(c_high[-i]) == c_time[-i]:
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
-                                                msg = f"""
-{market_type_verbose} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
-avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)}
+                                                if item[1] <= 3:
+                                                    size_verb = '..common size'
+                                                elif 3 < item[1] <= 5:
+                                                    size_verb = '..pretty big size 👌🏻'
+                                                else:
+                                                    size_verb = '..huge size 💪🏻'
+                                                    msg = f"""
+{market_type_verbose} #{symbol}
+{item[0]}(price) * <b>{int(item[1])}</b>(size) = ${int((item[0] * item[1]) / 1000)}K
+distance to size = {distance_per}%
+avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
@@ -161,9 +169,17 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)}
                                         else:
                                             if levels_dict.get(c_low[-i]) == c_time[-i]:
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
+                                                if item[1] <= 3:
+                                                    size_verb = '..common size'
+                                                elif 3 < item[1] <= 5:
+                                                    size_verb = '..pretty big size 👌🏻'
+                                                else:
+                                                    size_verb = '..huge size 💪🏻'
                                                 msg = f"""
-{market_type_verbose} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)
-avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)}
+{market_type_verbose} #{symbol}
+{item[0]}(price) * <b>{int(item[1])}</b>(size) = ${int((item[0] * item[1]) / 1000)}K
+distance to size = {distance_per}%
+avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
