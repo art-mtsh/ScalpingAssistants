@@ -88,7 +88,7 @@ def search(symbol, reload_time, time_log):
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                msg = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price} on distance {distance_to}%")
+                                msg = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price} on distance {round(distance_to, 2)}%")
                                 print(msg)
                                 bot1.send_message(662482931, msg)
                                 levels_volumes.pop(current_price)
