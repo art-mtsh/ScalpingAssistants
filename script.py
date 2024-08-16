@@ -78,17 +78,17 @@ def search(symbol, reload_time, time_log):
                         previous_b_values = [depth[j][1] for j in range(i - 20, i)]  # values 20 before
                         following_b_values = [depth[j][1] for j in range(i + 1, i + 21)]  # values 20 after
 
-                        distance = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
+                        distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
 
                         # Check if current b is greater than all preceding and following 20 b-values
-                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance <= avg_atr_per * 2 and current_vol >= avg_vol * 3:
+                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 2 and current_vol >= avg_vol * 3:
 
                             levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
 
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                msg = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price}")
+                                msg = (f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price} on distance {distance_to}%")
                                 print(msg)
                                 bot1.send_message(662482931, msg)
                                 levels_volumes.pop(current_price)
@@ -120,9 +120,9 @@ def search(symbol, reload_time, time_log):
                                         else:
                                             if levels_dict.get(c_high[-i]) == c_time[-i]:
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
-                                                if item[1] <= 3:
+                                                if round(item[1] / avg_vol, 1) <= 3:
                                                     size_verb = '..common size'
-                                                elif 3 < item[1] <= 5:
+                                                elif round(item[1] / avg_vol, 1) <= 5:
                                                     size_verb = '..pretty big size 👌🏻'
                                                 else:
                                                     size_verb = '..huge size 💪🏻'
@@ -169,15 +169,15 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
                                         else:
                                             if levels_dict.get(c_low[-i]) == c_time[-i]:
                                                 # msg = f"{market_type.capitalize()} #{symbol}: {item[0]} * {item[1]} = ${int((item[0] * item[1]) / 1000)}K ({distance_per}%)"
-                                                if item[1] <= 3:
+                                                if round(item[1] / avg_vol, 1) <= 3:
                                                     size_verb = '..common size'
-                                                elif 3 < item[1] <= 5:
+                                                elif round(item[1] / avg_vol, 1) <= 5:
                                                     size_verb = '..pretty big size 👌🏻'
                                                 else:
                                                     size_verb = '..huge size 💪🏻'
                                                 msg = f"""
 {market_type_verbose} #{symbol}
-{item[0]}(price) * <b>{int(item[1])}</b>(size) = ${int((item[0] * item[1]) / 1000)}K
+{item[0]} (price) * <b>{int(item[1])}</b> (size) = ${int((item[0] * item[1]) / 1000)}K
 distance to size = {distance_per}%
 avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 
