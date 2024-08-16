@@ -85,7 +85,10 @@ def search(symbol, reload_time, time_log):
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                personal_message = f"🤚🏻 {market_type_verbose} {symbol} found size x{round(current_vol / avg_vol, 1)} of avg.volumes on price {current_price}. Distance to current price: {round(distance_to, 2)}%"
+                                personal_message = (f"🤚🏻 {market_type_verbose} #{symbol}\n\n"
+                                                    f"Size: {round(current_vol / avg_vol, 1)} x avg.vol\n"
+                                                    f"On price: {current_price}\n"
+                                                    f"Distance: {round(distance_to, 2)}%")
                                 per_ids = [662482931, 317994467]
                                 for per_id in per_ids:
                                     personal_bot.send_message(per_id, personal_message)
