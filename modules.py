@@ -65,7 +65,7 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 	
 	# else:
 	# 	msg = f"No klines data for {symbol}, status code {response.status_code}"
-	# 	bot4.send_message(662482931, msg)
+	# 	bot_all.send_message(662482931, msg)
 	# 	print(msg)
 
 
@@ -114,7 +114,7 @@ def order_book(symbol, request_limit_length, market_type: str):
 
 	# else:
 	# 	msg = f"No depth data for {symbol}, status code {response.status_code}"
-	# 	bot4.send_message(662482931, msg)
+	# 	bot_all.send_message(662482931, msg)
 	# 	print(msg)
 
 # print(klines("1000RATSUSDT", "1m", 100, "s"))

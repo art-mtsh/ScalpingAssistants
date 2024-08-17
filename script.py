@@ -9,6 +9,7 @@ from modules import klines, order_book
 import sys
 from get_pairsV4 import get_pairs
 from screenshoterV2 import screenshoter_send
+from screenshoterV3_beta import screenshoter_send_beta
 from bot_handling import start_bot
 
 
@@ -97,7 +98,7 @@ size vol: {int(current_vol)}
 <b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
 distance to size: {round(distance_to, 2)}%
 """
-                                screenshoter_send(symbol, market_type, current_price, personal_message, 'personal')
+                                screenshoter_send_beta(symbol, market_type, current_price, personal_message)
                                 levels_volumes.pop(current_price)
 
                     for i in range(2, len(c_low) - c_room):
@@ -140,7 +141,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
-                                                screenshoter_send(symbol, market_type, item[0], message_for_screen, 'all')
+                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
                                                 if c_high[-i] not in static_dict:
                                                     static_dict.append(c_high[-i])
                                     break
@@ -183,7 +184,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
-                                                screenshoter_send(symbol, market_type, item[0], message_for_screen, 'all')
+                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
                                                 if c_low[-i] not in static_dict:
                                                     static_dict.append(c_low[-i])
                                     break
@@ -204,7 +205,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
         time.sleep(reload_time)
 
 
-def clean_old_files(directory, prefix='FT', extension='.png'):
+def clean_old_files(directory, prefix, extension='.png'):
     pattern = os.path.join(directory, f"{prefix}*{extension}")
     files_to_remove = glob.glob(pattern)
     for file_path in files_to_remove:
@@ -215,7 +216,7 @@ def clean_old_files(directory, prefix='FT', extension='.png'):
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
 
-    personal_message = f"⚙️ {len(files_to_remove)} images successfully removed..."
+    personal_message = f"⚙️ {len(files_to_remove)} images successfully removed...({prefix})"
     personal_bot.send_message(chat_id=662482931, text=personal_message)
     print(personal_message)
 
@@ -232,7 +233,9 @@ def monitor_time_and_control_threads():
 
             stop_event.clear()
 
-            clean_old_files('.')
+            clean_old_files('.', prefix='FT')
+            clean_old_files('.', prefix='FTbeta')
+
             reload_time = 58
             time_log = 1
 

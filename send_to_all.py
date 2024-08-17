@@ -60,7 +60,7 @@ def maintance_end():
 def send_message_to_all():
     for chat_id in existed_chat_ids:
         try:
-            msg = 'Роботу відновлено.'
+            msg = 'Бот працює в режимі тестування нового функціоналу. Вибачте за тимчасові незручності'
             bot4.send_message(chat_id, msg)
         except Exception as e:
             print(f"Failed to send message to {chat_id}: {e}")
