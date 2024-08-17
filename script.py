@@ -85,13 +85,19 @@ def search(symbol, reload_time, time_log):
                             if current_price not in levels_volumes.keys():
                                 levels_volumes.update({current_price: current_vol})
                             else:
-                                personal_message = (f"🐋 {market_type_verbose} #{symbol}\n\n"
-                                                    f"Size: {round(current_vol / avg_vol, 1)} x avg.vol\n"
-                                                    f"On price: {current_price}\n"
-                                                    f"Distance: {round(distance_to, 2)}%")
-                                per_ids = [662482931, 317994467]
-                                for per_id in per_ids:
-                                    personal_bot.send_message(per_id, personal_message)
+                                direction = '🔼' if current_price >= c_close[-1] else '🔽'
+                                personal_message = f"""
+🐋 {market_type_verbose} #{symbol}
+current price: {c_close[-1]}
+average vol: {int(avg_vol)}
+
+size price: {current_price} {direction}
+size vol: {int(current_vol)}
+
+<b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
+distance to size: {round(distance_to, 2)}%
+"""
+                                screenshoter_send(symbol, market_type, current_price, personal_message, 'personal')
                                 levels_volumes.pop(current_price)
 
                     for i in range(2, len(c_low) - c_room):
@@ -134,7 +140,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
-                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
+                                                screenshoter_send(symbol, market_type, item[0], message_for_screen, 'all')
                                                 if c_high[-i] not in static_dict:
                                                     static_dict.append(c_high[-i])
                                     break
@@ -177,7 +183,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
 """
-                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
+                                                screenshoter_send(symbol, market_type, item[0], message_for_screen, 'all')
                                                 if c_low[-i] not in static_dict:
                                                     static_dict.append(c_low[-i])
                                     break

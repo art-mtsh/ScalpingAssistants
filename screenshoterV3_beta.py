@@ -13,7 +13,7 @@ bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
 existed_chat_ids = set(chat_ids.get_existed_chat_ids())
 
 
-def screenshoter_send(symbol, market_type, level, message, receivers):
+def screenshoter_send_beta(symbol, market_type, level, message, receivers):
     
     r_length = 180
     
