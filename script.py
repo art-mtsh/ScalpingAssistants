@@ -215,7 +215,7 @@ def clean_old_files(directory, prefix, extension='.png'):
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
 
-    personal_message = f"⚙️ {len(files_to_remove)} images successfully removed...({prefix})"
+    personal_message = f"⚙️ {len(files_to_remove)} images ({prefix}) successfully removed..."
     personal_bot.send_message(chat_id=662482931, text=personal_message)
     print(personal_message)
 
