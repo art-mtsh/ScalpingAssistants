@@ -4,7 +4,6 @@ import time
 from datetime import datetime
 from threading import Thread, Event
 import telebot
-
 from modules import klines, order_book
 import sys
 from get_pairsV4 import get_pairs
