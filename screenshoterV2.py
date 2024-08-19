@@ -74,6 +74,7 @@ def screenshoter_send(symbol, market_type, level, message):
     # plt.show()
     
     plt.savefig(f'FT_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
+    plt.close(fig)
 
     for chat_id in existed_chat_ids:
         try:

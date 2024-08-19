@@ -68,6 +68,7 @@ def screenshoter_send_beta(symbol, market_type, level, message):
     # plt.show()
     
     plt.savefig(f'FTbeta_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
+    plt.close(fig)
 
     per_ids = [662482931, 317994467]
     for per_id in per_ids:
