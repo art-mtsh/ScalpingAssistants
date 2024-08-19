@@ -20,13 +20,19 @@ def screenshoter_send(symbol, market_type, level, message):
     futures_klines = f'https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=1m&limit={r_length}'
     spot_klines = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1m&limit={r_length}'
     
-    klines = requests.get(futures_klines) if market_type == 'f' else requests.get(spot_klines)
+    try:
+        klines = requests.get(futures_klines) if market_type == 'f' else requests.get(spot_klines)
+    except Exception as e:
+        msg = f"⛔️ Failed download screenshot data for {symbol} ({market_type}): {e}"
+        personal_bot.send_message(chat_id=662482931, text=msg)
+        print(msg)
+        return None
 
     cOpen = []
     cHigh = []
     cLow = []
     cClose = []
-    
+
     if klines.status_code == 200:
         response_length = len(klines.json()) if klines.json() is not None else 0
         if response_length == r_length:
@@ -35,6 +41,16 @@ def screenshoter_send(symbol, market_type, level, message):
             cHigh = [float(entry[2]) for entry in binance_candle_data]
             cLow = [float(entry[3]) for entry in binance_candle_data]
             cClose = [float(entry[4]) for entry in binance_candle_data]
+        else:
+            msg = f"⛔️ Empty screenshot data for {symbol} ({market_type}), status code {klines.status_code}"
+            personal_bot.send_message(chat_id=662482931, text=msg)
+            print(msg)
+            return None
+    else:
+        msg = f"⛔️ No screenshot data for {symbol} ({market_type}), status code {klines.status_code}"
+        personal_bot.send_message(chat_id=662482931, text=msg)
+        print(msg)
+        return None
     
     fig, ax = plt.subplots(figsize=(10, 4))
     fig.set_facecolor("#F0F0F0")
