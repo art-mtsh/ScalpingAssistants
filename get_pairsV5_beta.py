@@ -87,7 +87,7 @@ def get_pairs():
     sorted_res = [res for res in shared_results if res[1] <= 0.05 and res[2] >= 0.2]
     sorted_res = sorted(sorted_res, key=lambda x: x[2], reverse=True)
 
-    pairs_limit = 25
+    pairs_limit = 30
     result = [res[0] for res in sorted_res[:pairs_limit]]
     pairs_to_message = "".join(f"{i[0]} - {round(i[2], 2)}%\n" for i in sorted_res[:pairs_limit])
 
