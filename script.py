@@ -90,10 +90,10 @@ def search(symbol, reload_time, time_log):
                                 personal_message = f"""
 🐋 {market_type_verbose} #{symbol}
 current price: {c_close[-1]}
-average vol: {int(avg_vol)}
+average vol: {round(avg_vol/1000, 1)}K
 
 size price: {current_price} {direction}
-size vol: {int(current_vol)}
+size vol: {round(current_vol/1000, 1)}K
 
 <b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
 distance to size: {round(distance_to, 2)}%
@@ -134,7 +134,7 @@ distance to size: {round(distance_to, 2)}%
 
                                                 message_for_screen = f"""
 {market_type_verbose} #{symbol}
-{item[0]}(price) * <b>{int(item[1])}</b>(size) = ${int((item[0] * item[1]) / 1000)}K
+{item[0]}(price) * <b>{round(item[1]/1000, 1)}K</b>(size) = ${int((item[0] * item[1]) / 1000)}K
 distance to size = {distance_per}%
 avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 
@@ -177,7 +177,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 
                                                 message_for_screen = f"""
 {market_type_verbose} #{symbol}
-{item[0]} (price) * <b>{int(item[1])}</b> (size) = ${int((item[0] * item[1]) / 1000)}K
+{item[0]} (price) * <b>{round(item[1]/1000, 1)}K</b> (size) = ${int((item[0] * item[1]) / 1000)}K
 distance to size = {distance_per}%
 avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
 
