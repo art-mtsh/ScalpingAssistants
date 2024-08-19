@@ -79,7 +79,7 @@ def search(symbol, reload_time, time_log):
 
                         distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
 
-                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 2 and current_vol >= avg_vol * 3:
+                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 2 and current_vol >= avg_vol * 4:
 
                             levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
 
@@ -88,15 +88,19 @@ def search(symbol, reload_time, time_log):
                             else:
                                 direction = '🔼' if current_price >= c_close[-1] else '🔽'
                                 personal_message = f"""
-🐋 {market_type_verbose} #{symbol}
-current price: {c_close[-1]}
-average vol: {round(avg_vol/1000, 1)}K
+🐋 Size only!
+{market_type_verbose} #{symbol}
 
-size price: {current_price} {direction}
-size vol: {round(current_vol/1000, 1)}K
+current price: {c_close[-1]}
+average vol: {round(avg_vol/1000, 1)}K coins
+
+size price: {current_price} {direction} {round(distance_to, 2)}% from current price
+size vol: {round(current_vol/1000, 1)}K coins
 
 <b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
-distance to size: {round(distance_to, 2)}%
+
+<i>Повідомлення не є торговою рекомендацією.</i>
+@UA_sizes_bot
 """
                                 screenshoter_send_beta(symbol, market_type, current_price, personal_message)
                                 levels_volumes.pop(current_price)
@@ -119,24 +123,25 @@ distance to size: {round(distance_to, 2)}%
                                         levels_dict = levels_f if market_type == "f" else levels_s
                                         static_dict = static_f if market_type == "f" else static_s
 
+                                        direction = '🔼' if item[0] >= c_close[-1] else '🔽'
+
                                         if c_high[-i] not in levels_dict.keys():
                                             levels_dict.update({c_high[-i]: c_time[-i]})
 
                                         else:
                                             if levels_dict.get(c_high[-i]) == c_time[-i]:
 
-                                                if round(item[1] / avg_vol, 1) <= 3:
-                                                    size_verb = '..common size'
-                                                elif round(item[1] / avg_vol, 1) <= 5:
-                                                    size_verb = '..pretty big size 👌🏻'
-                                                else:
-                                                    size_verb = '..huge size 💪🏻'
-
                                                 message_for_screen = f"""
+🐘 Size on extremum!
 {market_type_verbose} #{symbol}
-{item[0]}(price) * <b>{round(item[1]/1000, 1)}K</b>(size) = ${int((item[0] * item[1]) / 1000)}K
-distance to size = {distance_per}%
-avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
+
+current price: {c_close[-1]}
+average vol: {round(avg_vol/1000, 1)}K coins
+
+size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
+size vol: {round(item[1]/1000, 1)}K coins
+
+<b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
 
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot
@@ -163,23 +168,24 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
                                         levels_dict = levels_f if market_type == "f" else levels_s
                                         static_dict = static_f if market_type == "f" else static_s
 
+                                        direction = '🔼' if item[0] >= c_close[-1] else '🔽'
+
                                         if c_low[-i] not in levels_dict.keys():
                                             levels_dict.update({c_low[-i]: c_time[-i]})
 
                                         else:
                                             if levels_dict.get(c_low[-i]) == c_time[-i]:
-                                                if round(item[1] / avg_vol, 1) <= 3:
-                                                    size_verb = '..common size'
-                                                elif round(item[1] / avg_vol, 1) <= 5:
-                                                    size_verb = '..pretty big size 👌🏻'
-                                                else:
-                                                    size_verb = '..huge size 💪🏻'
-
                                                 message_for_screen = f"""
+🐘 Size on extremum!
 {market_type_verbose} #{symbol}
-{item[0]} (price) * <b>{round(item[1]/1000, 1)}K</b> (size) = ${int((item[0] * item[1]) / 1000)}K
-distance to size = {distance_per}%
-avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
+
+current price: {c_close[-1]}
+average vol: {round(avg_vol/1000, 1)}K coins
+
+size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
+size vol: {round(item[1]/1000, 1)}K coins
+
+<b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
 
 <i>Повідомлення не є торговою рекомендацією.</i>
 @UA_sizes_bot

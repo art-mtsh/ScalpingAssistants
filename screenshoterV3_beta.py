@@ -6,6 +6,10 @@ import chat_ids
 PERSONAL_TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
 personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
 
+TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
+bot_all = telebot.TeleBot(TELEGRAM_TOKEN)
+
+existed_chat_ids = set(chat_ids.get_existed_chat_ids())
 
 def screenshoter_send_beta(symbol, market_type, level, message):
     
@@ -70,14 +74,14 @@ def screenshoter_send_beta(symbol, market_type, level, message):
     plt.savefig(f'FTbeta_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
     plt.close(fig)
 
-    per_ids = [662482931, 317994467]
-    for per_id in per_ids:
+    for chat_id in existed_chat_ids:
         try:
             with open(f'FTbeta_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
-                personal_bot.send_photo(per_id, pic, message, parse_mode="HTML")
+                bot_all.send_photo(chat_id, pic, message, parse_mode="HTML")
         except Exception as e:
-            msg = f"⛔️ Failed to send photo to {per_id}: {e}"
+            msg = f"⛔️ Failed to send photo to {chat_id}: {e}"
             personal_bot.send_message(chat_id=662482931, text=msg)
+            print(msg)
 
     # CLEANING
     # pic.close()
