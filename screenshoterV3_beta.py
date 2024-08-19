@@ -67,12 +67,12 @@ def screenshoter_send_beta(symbol, market_type, level, message):
     # Show the plot
     # plt.show()
     
-    plt.savefig(f'FTbeta{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
+    plt.savefig(f'FTbeta_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
 
     per_ids = [662482931, 317994467]
     for per_id in per_ids:
         try:
-            with open(f'FTbeta{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
+            with open(f'FTbeta_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
                 personal_bot.send_photo(per_id, pic, message, parse_mode="HTML")
             pic.close()
         except Exception as e:

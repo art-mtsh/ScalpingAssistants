@@ -73,11 +73,11 @@ def screenshoter_send(symbol, market_type, level, message):
     # Show the plot
     # plt.show()
     
-    plt.savefig(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
+    plt.savefig(f'FT_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', dpi=150, bbox_inches='tight', pad_inches=0.2)
 
     for chat_id in existed_chat_ids:
         try:
-            with open(f'FT{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
+            with open(f'FT_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
                 bot_all.send_photo(chat_id, pic, message, parse_mode="HTML")
             pic.close()
         except Exception as e:

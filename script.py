@@ -6,10 +6,11 @@ from threading import Thread, Event
 import telebot
 from modules import klines, order_book
 import sys
-from get_pairsV4 import get_pairs
+from get_pairsV5_beta import get_pairs
 from screenshoterV2 import screenshoter_send
 from screenshoterV3_beta import screenshoter_send_beta
 from bot_handling import start_bot
+import threading
 
 
 PERSONAL_TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
@@ -215,7 +216,8 @@ def clean_old_files(directory, prefix, extension='.png'):
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
 
-    personal_message = f"⚙️ {len(files_to_remove)} images ({prefix}) successfully removed..."
+    personal_message = (f"⚙️ {len(files_to_remove)} images ({prefix}) successfully removed...\n"
+                        f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
     personal_bot.send_message(chat_id=662482931, text=personal_message)
     print(personal_message)
 
@@ -226,20 +228,23 @@ def monitor_time_and_control_threads():
     while True:
         current_minute = int(datetime.now().strftime('%M'))
         if current_minute != 59:
-            personal_message = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. We starting..."
+            personal_message = (f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. We starting...\n"
+                                f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
+
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
 
             stop_event.clear()
 
-            clean_old_files('.', prefix='FT')
-            clean_old_files('.', prefix='FTbeta')
+            clean_old_files('.', prefix='FT_')
+            clean_old_files('.', prefix='FTbeta_')
 
             reload_time = 58
-            time_log = 1
+            time_log = 0
 
             pairs = get_pairs()
-            personal_message = f'⚙️ Sleep 30 seconds and starting calculation threads...'
+            personal_message = (f"⚙️ Sleep 30 seconds and starting calculation threads...\n"
+                                f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
             time.sleep(30)
@@ -250,17 +255,18 @@ def monitor_time_and_control_threads():
                 thread.start()
                 the_threads.append(thread)
 
-            personal_message = f'⚙️ Threads is running...'
+            personal_message = (f"⚙️ Threads is running...\n"
+                                f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
-            time.sleep(30)
 
             # Monitor until minutes reach 58
             while not int(datetime.now().strftime('%M')) == 59:
                 time.sleep(1)
 
             # Signal threads to stop
-            personal_message = f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. Signal to stop threads sent..."
+            personal_message = (f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. Signal to stop threads sent...\n"
+                                f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
             stop_event.set()
@@ -269,7 +275,8 @@ def monitor_time_and_control_threads():
             for thread in the_threads:
                 thread.join()
 
-            personal_message = "⚙️ All thread have been stopped. Waiting to restart..."
+            personal_message = ("⚙️ All thread have been stopped. Waiting to restart...\n"
+                                f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
             personal_bot.send_message(chat_id=662482931, text=personal_message)
             print(personal_message)
 
