@@ -190,7 +190,7 @@ avg_vol/size_vol = 1/{round(item[1] / avg_vol, 1)} {size_verb}
                                     break
 
             elif market_type == "f" and (depth is None or the_klines is None):
-                personal_message = f"⛔️ Main file. Error in {symbol} data. Futures is n/a!"
+                personal_message = f"⛔️ Main file. Error in {symbol} ({market_type}) data!"
                 print(personal_message)
                 personal_bot.send_message(662482931, personal_message)
 

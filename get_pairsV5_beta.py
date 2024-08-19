@@ -9,6 +9,7 @@ import threading
 TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
 personal_bot = telebot.TeleBot(TELEGRAM_TOKEN1)
 
+excluded = ['OMGUSDT', 'BTCUSDT', 'ETHUSDT', 'VANRYUSDT']
 
 def calculate_pairs(pairs_dict, shared_results):
     for symbol, ts in pairs_dict.items():
@@ -63,7 +64,7 @@ def get_pairs():
     for data in response_data:
         symbol = data['symbol']
         tick_size = data['filters'][0]['tickSize']
-        if data['quoteAsset'] == "USDT":
+        if data['quoteAsset'] == "USDT" and symbol not in excluded:
             ts_dict[symbol] = tick_size
 
     list_of_dicts = split_dict(ts_dict, 5)  # Split ts dict into 10 parts
@@ -71,26 +72,17 @@ def get_pairs():
     shared_results = []
     pairs_threads = []
 
-    personal_message = f"⚙️ Getting pairs.\nAlive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}"
-    personal_bot.send_message(chat_id=662482931, text=personal_message)
-    print(personal_message)
-
-
     for dict_of_pairs in list_of_dicts:
         pair_thread = Thread(target=calculate_pairs, args=(dict_of_pairs, shared_results))
         pairs_threads.append(pair_thread)
         pair_thread.start()
 
-    personal_message = f"⚙️ Getting pairs.\nAlive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}"
+    personal_message = f"⚙️ Getting pairs...\nAlive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}"
     personal_bot.send_message(chat_id=662482931, text=personal_message)
     print(personal_message)
 
     for pair_thread in pairs_threads:
         pair_thread.join()  # Ensure all threads have finished
-
-    personal_message = f"⚙️ Getting pairs.\nAlive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}"
-    personal_bot.send_message(chat_id=662482931, text=personal_message)
-    print(personal_message)
 
     sorted_res = [res for res in shared_results if res[1] <= 0.05 and res[2] >= 0.2]
     sorted_res = sorted(sorted_res, key=lambda x: x[2], reverse=True)

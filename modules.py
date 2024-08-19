@@ -3,11 +3,8 @@ from datetime import datetime
 import requests
 import telebot
 
-TELEGRAM_TOKEN = '6077915522:AAFuMUVPhw-cEaX4gCuPOa-chVwwMTpsUz8'
-bot1 = telebot.TeleBot(TELEGRAM_TOKEN)
-
-DIV_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-bot2 = telebot.TeleBot(DIV_TOKEN)
+TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+personal_bot = telebot.TeleBot(TELEGRAM_TOKEN1)
 
 def klines(symbol, frame, request_limit_length, market_type: str):
 	
@@ -20,7 +17,7 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 	if response.status_code == 200:
 		
 		response_length = len(response.json()) if response.json() != None else 0
-		
+
 		if response_length == request_limit_length:
 			binance_candle_data = response.json()
 			c_time = list(float(i[0]) for i in binance_candle_data)
@@ -29,44 +26,33 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 			c_low = list(float(i[3]) for i in binance_candle_data)
 			c_close = list(float(i[4]) for i in binance_candle_data)
 			c_volume = list(float(i[5]) for i in binance_candle_data)
-			c_trades = list(int(i[8]) for i in binance_candle_data)
 			buy_volume = list(float(i[9]) for i in binance_candle_data)
 			sell_volume = [c_volume[0] - buy_volume[0]]
 
-			# cumulative_delta = [int(buy_volume[0] - (c_volume[0] - buy_volume[0]))]
-			#
-			# for i in range(1, len(c_close)):
-			# 	b_vol = buy_volume[i]
-			# 	s_vol = c_volume[i] - buy_volume[i]
-			# 	new_delta = b_vol - s_vol
-			# 	new_delta = cumulative_delta[-1] + new_delta
-			# 	sell_volume.append(s_vol)
-			# 	cumulative_delta.append(int(new_delta))
-			
 			avg_vol = sum(c_volume) / len(c_volume)
 			avg_vol = avg_vol
 
 			if len(c_open) != len(c_high) != len(c_low) != len(c_close) != len(c_volume):
-				print(f"Length error for klines data for {symbol}!")
-
-			return [c_time, c_open, c_high, c_low, c_close, avg_vol, buy_volume, sell_volume]
+				msg = f"⛔️ Length error for klines data for {symbol} ({market_type}), status code {response.status_code}"
+				if market_type == 'f': personal_bot.send_message(662482931, msg)
+				if market_type == 'f': print(msg)
+			else:
+				return [c_time, c_open, c_high, c_low, c_close, avg_vol, buy_volume, sell_volume]
 		
 		else:
-			msg = f"Not enough klines for {symbol} on 1m"
-			bot1.send_message(662482931, msg)
-			print(msg)
+			msg = f"⛔️ Empty klines data for {symbol} ({market_type}) on 1m, status code {response.status_code}"
+			if market_type == 'f': personal_bot.send_message(662482931, msg)
+			if market_type == 'f': print(msg)
 			
 	elif response.status_code == 429:
-		msg = f"{symbol} LIMITS REACHED !!!! 429 CODE !!!!"
-		bot1.send_message(662482931, msg)
-		bot1.send_message(662482931, msg)
-		bot1.send_message(662482931, msg)
+		msg = f"⛔️ {symbol} ({market_type}) LIMITS REACHED !!!! 429 CODE !!!!"
+		personal_bot.send_message(662482931, msg)
 		print(msg)
 	
-	# else:
-	# 	msg = f"No klines data for {symbol}, status code {response.status_code}"
-	# 	bot_all.send_message(662482931, msg)
-	# 	print(msg)
+	else:
+		msg = f"⛔️ No klines data for {symbol} ({market_type}), status code {response.status_code}"
+		if market_type == 'f': personal_bot.send_message(662482931, msg)
+		if market_type == 'f': print(msg)
 
 
 def order_book(symbol, request_limit_length, market_type: str):
@@ -80,45 +66,47 @@ def order_book(symbol, request_limit_length, market_type: str):
 	if response.status_code == 200:
 
 		response_data = response.json()
-		
-		bids = response_data.get('bids')
-		asks = response_data.get('asks')
-		close = float(asks[0][0])
-		
-		# combined_list = asks + bids
-		# combined_list = list(combined_list)
-		# combined_list = [[float(item[0]), float(item[1])] for item in combined_list]
-		combined_list = [[float(item[0]), float(item[1])] for item in reversed(asks)]
-		for item in bids: combined_list.append([float(item[0]), float(item[1])])
-		combined_list_sorted = sorted(combined_list, key=lambda x: x[1])
-		
-		decimal_1 = len(str(combined_list[12][0]).split('.')[-1].rstrip('0'))
-		decimal_2 = len(str(combined_list[34][0]).split('.')[-1].rstrip('0'))
-		decimal_3 = len(str(combined_list[23][0]).split('.')[-1].rstrip('0'))
-		max_decimal = max([decimal_1, decimal_2, decimal_3])
+		if len(response_data['bids']) == request_limit_length:
 
-		if len(bids) == 0 or len(asks) == 0:
-			msg = f"Not enough depth for {symbol} on 1m"
-			bot1.send_message(662482931, msg)
-			print(msg)
+			bids = response_data.get('bids')
+			asks = response_data.get('asks')
+			close = float(asks[0][0])
 
-		return [close, combined_list, combined_list_sorted, max_decimal]
+			combined_list = [[float(item[0]), float(item[1])] for item in reversed(asks)]
+			for item in bids: combined_list.append([float(item[0]), float(item[1])])
+			combined_list_sorted = sorted(combined_list, key=lambda x: x[1])
+
+			decimal_1 = len(str(combined_list[12][0]).split('.')[-1].rstrip('0'))
+			decimal_2 = len(str(combined_list[34][0]).split('.')[-1].rstrip('0'))
+			decimal_3 = len(str(combined_list[23][0]).split('.')[-1].rstrip('0'))
+			max_decimal = max([decimal_1, decimal_2, decimal_3])
+
+
+			if len(bids) == 0 or len(asks) == 0:
+				msg = f"⛔️ bids=0 or asks=0 for depth data for {symbol} ({market_type}), status code {response.status_code}"
+				if market_type == 'f': personal_bot.send_message(662482931, msg)
+				if market_type == 'f': print(msg)
+			else:
+				return [close, combined_list, combined_list_sorted, max_decimal]
+
+		else:
+			msg = f"⛔️ Empty depth data for {symbol} ({market_type}), status code {response.status_code}"
+			if market_type == 'f': personal_bot.send_message(662482931, msg)
+			if market_type == 'f': print(msg)
 
 	elif response.status_code == 429:
 
-		msg = f"{url} LIMITS REACHED !!!! 429 CODE !!!!"
-		bot1.send_message(662482931, msg)
-		bot1.send_message(662482931, msg)
-		bot1.send_message(662482931, msg)
+		msg = f"⛔️ {symbol} ({market_type}) LIMITS REACHED !!!! 429 CODE !!!!"
+		personal_bot.send_message(662482931, msg)
 		print(msg)
 
-	# else:
-	# 	msg = f"No depth data for {symbol}, status code {response.status_code}"
-	# 	bot_all.send_message(662482931, msg)
-	# 	print(msg)
+	else:
+		msg = f"⛔️ No depth data for {symbol} ({market_type}), status code {response.status_code}"
+		if market_type == 'f': personal_bot.send_message(662482931, msg)
+		if market_type == 'f': print(msg)
 
 # print(klines("1000RATSUSDT", "1m", 100, "s"))
-# print(order_book("1000RATSUSDT", 100, "s"))
+# print(order_book("RIFUSDT", 500, "s"))
 
 
 def three_distances(symbol, close, combined_list, max_avg_size, search_distance, market_type: str):
