@@ -80,7 +80,6 @@ def screenshoter_send(symbol, market_type, level, message):
         try:
             with open(f'FT_{symbol}_{cOpen[-1]}_{cClose[-1]}.png', 'rb') as pic:
                 bot_all.send_photo(chat_id, pic, message, parse_mode="HTML")
-            pic.close()
         except Exception as e:
             msg = f"⛔️ Failed to send photo to {chat_id}: {e}"
             personal_bot.send_message(chat_id=662482931, text=msg)
