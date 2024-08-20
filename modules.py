@@ -33,14 +33,16 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 			avg_vol = avg_vol
 
 			if len(c_open) != len(c_high) != len(c_low) != len(c_close) != len(c_volume):
-				msg = f"⛔️ Length error for klines data for {symbol} ({market_type}), status code {response.status_code}"
+				msg = (f"⛔️ Length error for klines data for {symbol} ({market_type}), status code {response.status_code}\n"
+					   f"{url}")
 				if market_type == 'f': personal_bot.send_message(662482931, msg)
 				if market_type == 'f': print(msg)
 			else:
 				return [c_time, c_open, c_high, c_low, c_close, avg_vol, buy_volume, sell_volume]
 		
 		else:
-			msg = f"⛔️ Empty klines data for {symbol} ({market_type}) on 1m, status code {response.status_code}"
+			msg = (f"⛔️ Empty klines data for {symbol} ({market_type}) on 1m, status code {response.status_code}\n"
+				   f"{url}")
 			if market_type == 'f': personal_bot.send_message(662482931, msg)
 			if market_type == 'f': print(msg)
 			
@@ -50,7 +52,8 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 		print(msg)
 	
 	else:
-		msg = f"⛔️ No klines data for {symbol} ({market_type}), status code {response.status_code}"
+		msg = (f"⛔️ No klines data for {symbol} ({market_type}), status code {response.status_code}\n"
+			   f"{url}")
 		if market_type == 'f': personal_bot.send_message(662482931, msg)
 		if market_type == 'f': print(msg)
 
@@ -83,14 +86,16 @@ def order_book(symbol, request_limit_length, market_type: str):
 
 
 			if len(bids) == 0 or len(asks) == 0:
-				msg = f"⛔️ bids=0 or asks=0 for depth data for {symbol} ({market_type}), status code {response.status_code}"
+				msg = (f"⛔️ bids=0 or asks=0 for depth data for {symbol} ({market_type}), status code {response.status_code}\n"
+					   f"{url}")
 				if market_type == 'f': personal_bot.send_message(662482931, msg)
 				if market_type == 'f': print(msg)
 			else:
 				return [close, combined_list, combined_list_sorted, max_decimal]
 
 		else:
-			msg = f"⛔️ Empty depth data for {symbol} ({market_type}), status code {response.status_code}"
+			msg = (f"⛔️ Empty depth data for {symbol} ({market_type}), status code {response.status_code}\n"
+					   f"{url}")
 			if market_type == 'f': personal_bot.send_message(662482931, msg)
 			if market_type == 'f': print(msg)
 
@@ -101,7 +106,8 @@ def order_book(symbol, request_limit_length, market_type: str):
 		print(msg)
 
 	else:
-		msg = f"⛔️ No depth data for {symbol} ({market_type}), status code {response.status_code}"
+		msg = (f"⛔️ No depth data for {symbol} ({market_type}), status code {response.status_code}\n"
+			   f"{url}")
 		if market_type == 'f': personal_bot.send_message(662482931, msg)
 		if market_type == 'f': print(msg)
 
