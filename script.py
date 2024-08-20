@@ -250,7 +250,7 @@ def monitor_time_and_control_threads():
             clean_old_files('.', prefix='FTbeta_')
 
             reload_time = 58
-            time_log = 1
+            time_log = 0
 
             pairs = get_pairs()
             personal_message = (f"⚙️ Sleep 30 seconds and starting calculation threads...\n"
