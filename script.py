@@ -71,6 +71,7 @@ def search(symbol, reload_time, time_log):
 
                 if len(c_high) == len(c_low):
 
+                    # пошук екстремуму, а потім сайзу на ньому
                     for i in range(2, len(c_low) - c_room):
                         if c_high[-i] >= max(c_high[-1: -i - c_room: -1]):
                             for item in depth:
@@ -161,6 +162,7 @@ size vol: {round(item[1]/1000, 1)}K coins
                                                     static_dict.append(c_low[-i])
                                     break
 
+                    # пошук виключно сайзу
                     for i in range(110, len(depth) - 110):
                         current_vol = depth[i][1]
                         current_price = depth[i][0]
