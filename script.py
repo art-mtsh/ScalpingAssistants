@@ -54,7 +54,6 @@ def search(symbol, reload_time, time_log):
 
                 try:
                     the_klines = klines(symbol, "1m", 100, market_type)
-
                 except Exception as e:
                     personal_message = f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}"
                     print(personal_message)
@@ -199,10 +198,10 @@ size vol: {round(current_vol / 1000, 1)}K coins
                                     screenshoter_send_beta(symbol, market_type, current_price, personal_message)
                                     levels_volumes.pop(current_price)
 
-                elif market_type == "f" and (depth is None or the_klines is None):
-                    personal_message = f"⛔️ Main file. Error in {symbol} ({market_type}) data!"
-                    print(personal_message)
-                    personal_bot.send_message(662482931, personal_message)
+                # elif market_type == "f" and (depth is None or the_klines is None):
+                #     personal_message = f"⛔️ Main file. Error in {symbol} ({market_type}) data!"
+                #     print(personal_message)
+                #     personal_bot.send_message(662482931, personal_message)
 
             time2 = time.perf_counter()
             time3 = time2 - time1

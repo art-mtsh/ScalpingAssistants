@@ -41,7 +41,7 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 				return [c_time, c_open, c_high, c_low, c_close, avg_vol, buy_volume, sell_volume]
 		
 		else:
-			msg = (f"⛔️ Empty klines data for {symbol} ({market_type}) on 1m, status code {response.status_code}\n"
+			msg = (f"⛔️ Not enough ({response_length}/{request_limit_length}) klines data for {symbol} ({market_type}), status code {response.status_code}\n"
 				   f"{url}")
 			if market_type == 'f': personal_bot.send_message(662482931, msg)
 			if market_type == 'f': print(msg)
@@ -94,7 +94,7 @@ def order_book(symbol, request_limit_length, market_type: str):
 				return [close, combined_list, combined_list_sorted, max_decimal]
 
 		else:
-			msg = (f"⛔️ Empty depth data for {symbol} ({market_type}), status code {response.status_code}\n"
+			msg = (f"⛔️ Not enough ({len(response_data['bids'])}/{request_limit_length}) depth data for {symbol} ({market_type}), status code {response.status_code}\n"
 					   f"{url}")
 			if market_type == 'f': personal_bot.send_message(662482931, msg)
 			if market_type == 'f': print(msg)
