@@ -71,40 +71,6 @@ def search(symbol, reload_time, time_log):
 
                 if len(c_high) == len(c_low):
 
-                    for i in range(110, len(depth) - 110):
-                        current_vol = depth[i][1]
-                        current_price = depth[i][0]
-                        previous_b_values = [depth[j][1] for j in range(i - 20, i)]  # values 20 before
-                        following_b_values = [depth[j][1] for j in range(i + 1, i + 21)]  # values 20 after
-
-                        distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
-
-                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 2 and current_vol >= avg_vol * 4:
-
-                            levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
-
-                            if current_price not in levels_volumes.keys():
-                                levels_volumes.update({current_price: current_vol})
-                            else:
-                                direction = '🔼' if current_price >= c_close[-1] else '🔽'
-                                personal_message = f"""
-🐋 Size only!
-{market_type_verbose} #{symbol}
-
-current price: {c_close[-1]}
-average vol: {round(avg_vol/1000, 1)}K coins
-
-size price: {current_price} {direction} {round(distance_to, 2)}% from current price
-size vol: {round(current_vol/1000, 1)}K coins
-
-<b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
-
-<i>Повідомлення не є торговою рекомендацією.</i>
-@UA_sizes_bot
-"""
-                                screenshoter_send_beta(symbol, market_type, current_price, personal_message)
-                                levels_volumes.pop(current_price)
-
                     for i in range(2, len(c_low) - c_room):
                         if c_high[-i] >= max(c_high[-1: -i - c_room: -1]):
                             for item in depth:
@@ -194,6 +160,41 @@ size vol: {round(item[1]/1000, 1)}K coins
                                                 if c_low[-i] not in static_dict:
                                                     static_dict.append(c_low[-i])
                                     break
+
+                    for i in range(110, len(depth) - 110):
+                        current_vol = depth[i][1]
+                        current_price = depth[i][0]
+                        previous_b_values = [depth[j][1] for j in range(i - 20, i)]  # values 20 before
+                        following_b_values = [depth[j][1] for j in range(i + 1, i + 21)]  # values 20 after
+
+                        distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
+                        static_dict = static_f if market_type == "f" else static_s
+
+                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 1.5 and current_vol >= avg_vol * 4 and current_price not in static_dict:
+
+                            levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
+
+                            if current_price not in levels_volumes.keys():
+                                levels_volumes.update({current_price: current_vol})
+                            else:
+                                direction = '🔼' if current_price >= c_close[-1] else '🔽'
+                                personal_message = f"""
+🐋 Size only!
+{market_type_verbose} #{symbol}
+
+current price: {c_close[-1]}
+average vol: {round(avg_vol / 1000, 1)}K coins
+
+size price: {current_price} {direction} {round(distance_to, 2)}% from current price
+size vol: {round(current_vol / 1000, 1)}K coins
+
+<b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
+
+<i>Повідомлення не є торговою рекомендацією.</i>
+@UA_sizes_bot
+"""
+                                screenshoter_send_beta(symbol, market_type, current_price, personal_message)
+                                levels_volumes.pop(current_price)
 
             elif market_type == "f" and (depth is None or the_klines is None):
                 personal_message = f"⛔️ Main file. Error in {symbol} ({market_type}) data!"
