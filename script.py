@@ -100,20 +100,20 @@ def search(symbol, reload_time, time_log):
                                                 if levels_dict.get(c_high[-i]) == c_time[-i]:
 
                                                     message_for_screen = f"""
-    🐘 Size on extremum!
-    {market_type_verbose} #{symbol}
-    
-    current price: {c_close[-1]}
-    average vol: {round(avg_vol/1000, 1)}K coins
-    
-    size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
-    size vol: {round(item[1]/1000, 1)}K coins
-    
-    <b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
-    
-    <i>Повідомлення не є торговою рекомендацією.</i>
-    @UA_sizes_bot
-    """
+🐘 Size on extremum!
+{market_type_verbose} #{symbol}
+
+current price: {c_close[-1]}
+average vol: {round(avg_vol/1000, 1)}K coins
+
+size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
+size vol: {round(item[1]/1000, 1)}K coins
+
+<b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
+
+<i>Повідомлення не є торговою рекомендацією.</i>
+@UA_sizes_bot
+"""
                                                     screenshoter_send(symbol, market_type, item[0], message_for_screen)
                                                     if c_high[-i] not in static_dict:
                                                         static_dict.append(c_high[-i])
@@ -144,20 +144,20 @@ def search(symbol, reload_time, time_log):
                                             else:
                                                 if levels_dict.get(c_low[-i]) == c_time[-i]:
                                                     message_for_screen = f"""
-    🐘 Size on extremum!
-    {market_type_verbose} #{symbol}
-    
-    current price: {c_close[-1]}
-    average vol: {round(avg_vol/1000, 1)}K coins
-    
-    size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
-    size vol: {round(item[1]/1000, 1)}K coins
-    
-    <b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
-    
-    <i>Повідомлення не є торговою рекомендацією.</i>
-    @UA_sizes_bot
-    """
+🐘 Size on extremum!
+{market_type_verbose} #{symbol}
+
+current price: {c_close[-1]}
+average vol: {round(avg_vol/1000, 1)}K coins
+
+size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
+size vol: {round(item[1]/1000, 1)}K coins
+
+<b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
+
+<i>Повідомлення не є торговою рекомендацією.</i>
+@UA_sizes_bot
+"""
                                                     screenshoter_send(symbol, market_type, item[0], message_for_screen)
                                                     if c_low[-i] not in static_dict:
                                                         static_dict.append(c_low[-i])
@@ -182,20 +182,20 @@ def search(symbol, reload_time, time_log):
                                 else:
                                     direction = '🔼' if current_price >= c_close[-1] else '🔽'
                                     personal_message = f"""
-    🐋 Size only!
-    {market_type_verbose} #{symbol}
-    
-    current price: {c_close[-1]}
-    average vol: {round(avg_vol / 1000, 1)}K coins
-    
-    size price: {current_price} {direction} {round(distance_to, 2)}% from current price
-    size vol: {round(current_vol / 1000, 1)}K coins
-    
-    <b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
-    
-    <i>Повідомлення не є торговою рекомендацією.</i>
-    @UA_sizes_bot
-    """
+🐋 Size only!
+{market_type_verbose} #{symbol}
+
+current price: {c_close[-1]}
+average vol: {round(avg_vol / 1000, 1)}K coins
+
+size price: {current_price} {direction} {round(distance_to, 2)}% from current price
+size vol: {round(current_vol / 1000, 1)}K coins
+
+<b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
+
+<i>Повідомлення не є торговою рекомендацією.</i>
+@UA_sizes_bot
+"""
                                     screenshoter_send_beta(symbol, market_type, current_price, personal_message)
                                     levels_volumes.pop(current_price)
 
