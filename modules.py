@@ -69,7 +69,7 @@ def order_book(symbol, request_limit_length, market_type: str):
 	if response.status_code == 200:
 
 		response_data = response.json()
-		if len(response_data['bids']) == request_limit_length:
+		if len(response_data['bids']) >= request_limit_length * 0.8:
 
 			bids = response_data.get('bids')
 			asks = response_data.get('asks')
