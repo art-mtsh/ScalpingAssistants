@@ -1,4 +1,6 @@
 import telebot
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import requests
 import chat_ids

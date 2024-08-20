@@ -7,10 +7,10 @@ import os
 import chat_ids
 
 TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-bot1 = telebot.TeleBot(TELEGRAM_TOKEN1)
+personal_bot = telebot.TeleBot(TELEGRAM_TOKEN1)
 
 TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
-bot4 = telebot.TeleBot(TELEGRAM_TOKEN)
+bot_all = telebot.TeleBot(TELEGRAM_TOKEN)
 disclaimer = '<i>Торгівля криптовалютами має високі ризики та може призвести до значних фінансових втрат! Уся відповідальність лежить на користувачеві бота.</i>'
 
 # File to store user chat IDs
@@ -19,7 +19,7 @@ chat_ids_file = "user_chat_ids.txt"
 # Load existing chat IDs
 existed_chat_ids = set(chat_ids.get_existed_chat_ids())
 
-@bot4.message_handler(commands=['start'])
+@bot_all.message_handler(commands=['start'])
 def send_welcome(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
@@ -36,11 +36,11 @@ f"""🇺🇦 Слава Україні!
 
 {disclaimer}
 """)
-    bot4.send_message(chat_id, msg, parse_mode="HTML")
-    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на start')
+    bot_all.send_message(chat_id, msg, parse_mode="HTML")
+    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на start')
 
 
-@bot4.message_handler(commands=['how_to_use'])
+@bot_all.message_handler(commands=['how_to_use'])
 def send_htu(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
@@ -61,27 +61,27 @@ def send_htu(message):
 {disclaimer}
 """
     # pic = open(f'exam1.jpg', 'rb')
-    # bot4.send_photo(chat_id, pic, msg, parse_mode="HTML")
-    bot4.send_message(message.chat.id, msg, parse_mode="HTML")
-    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на how_to_use')
+    # bot_all.send_photo(chat_id, pic, msg, parse_mode="HTML")
+    bot_all.send_message(message.chat.id, msg, parse_mode="HTML")
+    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на how_to_use')
 
 
-@bot4.message_handler(commands=['no_size'])
+@bot_all.message_handler(commands=['no_size'])
 def send_nosize(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
 
-    bot4.send_message(message.chat.id,
+    bot_all.send_message(message.chat.id,
 f"""
 Якшо червоної лінії на скріншоті нема - значить знайдений великий сайз знаходиться критично близько до рамки. Це графічний баг, просто там лінія не малюється, я хз, колись поправлю. В такому разі дивись просто на ціну в описі.
 
 {disclaimer}
 """, parse_mode="HTML")
-    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на no_size')
+    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на no_size')
 
 
-@bot4.message_handler(commands=['how_it_works'])
+@bot_all.message_handler(commands=['how_it_works'])
 def send_hit(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
@@ -129,17 +129,17 @@ def send_hit(message):
 
 {disclaimer}
 '''
-    bot4.send_message(chat_id, msg, parse_mode="HTML")
-    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на how_it_works')
+    bot_all.send_message(chat_id, msg, parse_mode="HTML")
+    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на how_it_works')
 
 
-@bot4.message_handler(commands=['status'])
+@bot_all.message_handler(commands=['status'])
 def send_status(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
 
-    msg = f"""
+    msg1 = f"""
 🟢 Сервер запущено, бот працює.    
 
 Востаннє бот оновлював список монет о {os.getenv('RELOAD_TIMESTAMP')}.
@@ -154,19 +154,34 @@ def send_status(message):
 
 Частота проходу по кожному з них ~1 хвилина.
     """
-    bot4.send_message(message.chat.id, msg, parse_mode="HTML")
-    bot1.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на status')
+    msg2 = '🔴 Бот тимчасово не працює'
+    msg = msg1 if os.getenv('BOT_STATE') == "run" else msg2
 
+    bot_all.send_message(message.chat.id, msg, parse_mode="HTML")
+    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на status')
 
-@bot4.message_handler(func=lambda message: True)
+@bot_all.message_handler(commands=['pause'])
+def bot_pause(message):
+    chat_id = message.chat.id
+    if chat_id == 662482931:
+        os.environ['BOT_STATE'] = "pause"
+        personal_bot.send_message(662482931, f'⏸ BOT_STATE = pause')
+
+@bot_all.message_handler(commands=['run'])
+def bot_pause(message):
+    chat_id = message.chat.id
+    if chat_id == 662482931:
+        os.environ['BOT_STATE'] = "run"
+        personal_bot.send_message(662482931, f'▶️ BOT_STATE = run')
+
+@bot_all.message_handler(func=lambda message: True)
 def handle_message(message):
-    bot4.send_message(message.chat.id, "Повідомлень я не розумію, сорян 🤷🏻‍♂️")
+    bot_all.send_message(message.chat.id, "Повідомлень я не розумію, сорян 🤷🏻‍♂️")
     chat_id = message.chat.id
     pic = open(f'pig.webm', 'rb')
-    bot4.send_sticker(chat_id, pic)
-    bot1.send_message(662482931, f'🙂 Користувач {chat_id} шось написав і отримав свиню')
+    bot_all.send_sticker(chat_id, pic)
+    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} шось написав і отримав свиню')
 
 
 def start_bot():
-    bot4.infinity_polling()
-
+    bot_all.infinity_polling()

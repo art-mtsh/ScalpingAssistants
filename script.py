@@ -23,6 +23,7 @@ os.environ['BINANCE_SENT'] = ""
 os.environ['FILTERED'] = ""
 os.environ['IN_WORK'] = ""
 os.environ['RELOAD_TIMESTAMP'] = ""
+os.environ['BOT_STATE'] = "run"
 
 
 def search(symbol, reload_time, time_log):
@@ -40,178 +41,178 @@ def search(symbol, reload_time, time_log):
     atr_dis = 3  # мультиплікатор відстані до сайзу в ATR
 
     while not stop_event.is_set():
+        if os.getenv('BOT_STATE') == "run":
+            time1 = time.perf_counter()
 
-        time1 = time.perf_counter()
+            for market_type in ["f", "s"]:
+                try:
+                    depth = order_book(symbol, 500, market_type)
+                except Exception as e:
+                    personal_message = f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}"
+                    print(personal_message)
+                    personal_bot.send_message(662482931, personal_message)
 
-        for market_type in ["f", "s"]:
-            try:
-                depth = order_book(symbol, 500, market_type)
-            except Exception as e:
-                personal_message = f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}"
-                print(personal_message)
-                personal_bot.send_message(662482931, personal_message)
+                try:
+                    the_klines = klines(symbol, "1m", 100, market_type)
 
-            try:
-                the_klines = klines(symbol, "1m", 100, market_type)
+                except Exception as e:
+                    personal_message = f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}"
+                    print(personal_message)
+                    personal_bot.send_message(662482931, personal_message)
 
-            except Exception as e:
-                personal_message = f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}"
-                print(personal_message)
-                personal_bot.send_message(662482931, personal_message)
+                market_type_verbose = 'FUTURES' if market_type == 'f' else 'SPOT'
 
-            market_type_verbose = 'FUTURES' if market_type == 'f' else 'SPOT'
+                if depth is not None and the_klines is not None:
 
-            if depth is not None and the_klines is not None:
+                    c_time, c_open, c_high, c_low, c_close, avg_vol = the_klines[0], the_klines[1], the_klines[2], the_klines[3], the_klines[4], the_klines[5]
+                    depth = depth[1]  # [ціна, об'єм]
 
-                c_time, c_open, c_high, c_low, c_close, avg_vol = the_klines[0], the_klines[1], the_klines[2], the_klines[3], the_klines[4], the_klines[5]
-                depth = depth[1]  # [ціна, об'єм]
+                    avg_atr_per = [(c_high[-c] - c_low[-c]) / (c_close[-c] / 100) for c in range(30)]
+                    avg_atr_per = float('{:.2f}'.format(sum(avg_atr_per) / len(avg_atr_per)))
 
-                avg_atr_per = [(c_high[-c] - c_low[-c]) / (c_close[-c] / 100) for c in range(30)]
-                avg_atr_per = float('{:.2f}'.format(sum(avg_atr_per) / len(avg_atr_per)))
+                    if len(c_high) == len(c_low):
 
-                if len(c_high) == len(c_low):
+                        # пошук екстремуму, а потім сайзу на ньому
+                        for i in range(2, len(c_low) - c_room):
+                            if c_high[-i] >= max(c_high[-1: -i - c_room: -1]):
+                                for item in depth:
+                                    # щільність знаходиться між 9-ю спочатку, 9-ю з кінця та ціна щільності == хаю
+                                    if d_room - 1 < depth.index(item) < len(depth) - d_room and c_high[-i] == item[0]:
+                                        # сайзи між ціною щільності -10 та ціною щільності
+                                        lower_sizes = [depth[k][1] for k in range(depth.index(item) - d_room, depth.index(item))]
+                                        # сайзи між ціною щільності +10 та ціною щільності
+                                        higher_sizes = [depth[k][1] for k in range(depth.index(item) + 1, depth.index(item) + d_room + 1)]
+                                        # дистанція до ціни
+                                        distance_per = abs(c_high[-i] - c_close[-1]) / (c_close[-1] / 100)
+                                        distance_per = float('{:.2f}'.format(distance_per))
 
-                    # пошук екстремуму, а потім сайзу на ньому
-                    for i in range(2, len(c_low) - c_room):
-                        if c_high[-i] >= max(c_high[-1: -i - c_room: -1]):
-                            for item in depth:
-                                # щільність знаходиться між 9-ю спочатку, 9-ю з кінця та ціна щільності == хаю
-                                if d_room - 1 < depth.index(item) < len(depth) - d_room and c_high[-i] == item[0]:
-                                    # сайзи між ціною щільності -10 та ціною щільності
-                                    lower_sizes = [depth[k][1] for k in range(depth.index(item) - d_room, depth.index(item))]
-                                    # сайзи між ціною щільності +10 та ціною щільності
-                                    higher_sizes = [depth[k][1] for k in range(depth.index(item) + 1, depth.index(item) + d_room + 1)]
-                                    # дистанція до ціни
-                                    distance_per = abs(c_high[-i] - c_close[-1]) / (c_close[-1] / 100)
-                                    distance_per = float('{:.2f}'.format(distance_per))
+                                        if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 2:
 
-                                    if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 2:
+                                            levels_dict = levels_f if market_type == "f" else levels_s
+                                            static_dict = static_f if market_type == "f" else static_s
 
-                                        levels_dict = levels_f if market_type == "f" else levels_s
-                                        static_dict = static_f if market_type == "f" else static_s
+                                            direction = '🔼' if item[0] >= c_close[-1] else '🔽'
 
-                                        direction = '🔼' if item[0] >= c_close[-1] else '🔽'
+                                            if c_high[-i] not in levels_dict.keys():
+                                                levels_dict.update({c_high[-i]: c_time[-i]})
 
-                                        if c_high[-i] not in levels_dict.keys():
-                                            levels_dict.update({c_high[-i]: c_time[-i]})
+                                            else:
+                                                if levels_dict.get(c_high[-i]) == c_time[-i]:
 
-                                        else:
-                                            if levels_dict.get(c_high[-i]) == c_time[-i]:
+                                                    message_for_screen = f"""
+    🐘 Size on extremum!
+    {market_type_verbose} #{symbol}
+    
+    current price: {c_close[-1]}
+    average vol: {round(avg_vol/1000, 1)}K coins
+    
+    size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
+    size vol: {round(item[1]/1000, 1)}K coins
+    
+    <b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
+    
+    <i>Повідомлення не є торговою рекомендацією.</i>
+    @UA_sizes_bot
+    """
+                                                    screenshoter_send(symbol, market_type, item[0], message_for_screen)
+                                                    if c_high[-i] not in static_dict:
+                                                        static_dict.append(c_high[-i])
+                                        break
 
-                                                message_for_screen = f"""
-🐘 Size on extremum!
-{market_type_verbose} #{symbol}
+                            if c_low[-i] <= min(c_low[-1: -i - c_room: -1]):
+                                for item in depth:
+                                    # щільність знаходиться між 9-ю спочатку, 9-ю з кінця та ціна щільності == хаю
+                                    if d_room - 1 < depth.index(item) < len(depth) - d_room and c_low[-i] == item[0]:
+                                        # сайзи між ціною щільності -10 та ціною щільності
+                                        lower_sizes = [depth[k][1] for k in range(depth.index(item) - d_room, depth.index(item))]
+                                        # сайзи між ціною щільності +10 та ціною щільності
+                                        higher_sizes = [depth[k][1] for k in range(depth.index(item) + 1, depth.index(item) + d_room + 1)]
+                                        # дистанція до ціни
+                                        distance_per = abs(c_low[-i] - c_close[-1]) / (c_close[-1] / 100)
+                                        distance_per = float('{:.2f}'.format(distance_per))
 
-current price: {c_close[-1]}
-average vol: {round(avg_vol/1000, 1)}K coins
+                                        if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 2:
 
-size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
-size vol: {round(item[1]/1000, 1)}K coins
+                                            levels_dict = levels_f if market_type == "f" else levels_s
+                                            static_dict = static_f if market_type == "f" else static_s
 
-<b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
+                                            direction = '🔼' if item[0] >= c_close[-1] else '🔽'
 
-<i>Повідомлення не є торговою рекомендацією.</i>
-@UA_sizes_bot
-"""
-                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
-                                                if c_high[-i] not in static_dict:
-                                                    static_dict.append(c_high[-i])
-                                    break
+                                            if c_low[-i] not in levels_dict.keys():
+                                                levels_dict.update({c_low[-i]: c_time[-i]})
 
-                        if c_low[-i] <= min(c_low[-1: -i - c_room: -1]):
-                            for item in depth:
-                                # щільність знаходиться між 9-ю спочатку, 9-ю з кінця та ціна щільності == хаю
-                                if d_room - 1 < depth.index(item) < len(depth) - d_room and c_low[-i] == item[0]:
-                                    # сайзи між ціною щільності -10 та ціною щільності
-                                    lower_sizes = [depth[k][1] for k in range(depth.index(item) - d_room, depth.index(item))]
-                                    # сайзи між ціною щільності +10 та ціною щільності
-                                    higher_sizes = [depth[k][1] for k in range(depth.index(item) + 1, depth.index(item) + d_room + 1)]
-                                    # дистанція до ціни
-                                    distance_per = abs(c_low[-i] - c_close[-1]) / (c_close[-1] / 100)
-                                    distance_per = float('{:.2f}'.format(distance_per))
+                                            else:
+                                                if levels_dict.get(c_low[-i]) == c_time[-i]:
+                                                    message_for_screen = f"""
+    🐘 Size on extremum!
+    {market_type_verbose} #{symbol}
+    
+    current price: {c_close[-1]}
+    average vol: {round(avg_vol/1000, 1)}K coins
+    
+    size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
+    size vol: {round(item[1]/1000, 1)}K coins
+    
+    <b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
+    
+    <i>Повідомлення не є торговою рекомендацією.</i>
+    @UA_sizes_bot
+    """
+                                                    screenshoter_send(symbol, market_type, item[0], message_for_screen)
+                                                    if c_low[-i] not in static_dict:
+                                                        static_dict.append(c_low[-i])
+                                        break
 
-                                    if item[1] >= max(lower_sizes) * 1.3 and item[1] >= max(higher_sizes) * 1.3 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 2:
+                        # пошук виключно сайзу
+                        for i in range(110, len(depth) - 110):
+                            current_vol = depth[i][1]
+                            current_price = depth[i][0]
+                            previous_b_values = [depth[j][1] for j in range(i - 20, i)]  # values 20 before
+                            following_b_values = [depth[j][1] for j in range(i + 1, i + 21)]  # values 20 after
 
-                                        levels_dict = levels_f if market_type == "f" else levels_s
-                                        static_dict = static_f if market_type == "f" else static_s
+                            distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
+                            static_dict = static_f if market_type == "f" else static_s
 
-                                        direction = '🔼' if item[0] >= c_close[-1] else '🔽'
+                            if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 1.5 and current_vol >= avg_vol * 4 and current_price not in static_dict:
 
-                                        if c_low[-i] not in levels_dict.keys():
-                                            levels_dict.update({c_low[-i]: c_time[-i]})
+                                levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
 
-                                        else:
-                                            if levels_dict.get(c_low[-i]) == c_time[-i]:
-                                                message_for_screen = f"""
-🐘 Size on extremum!
-{market_type_verbose} #{symbol}
+                                if current_price not in levels_volumes.keys():
+                                    levels_volumes.update({current_price: current_vol})
+                                else:
+                                    direction = '🔼' if current_price >= c_close[-1] else '🔽'
+                                    personal_message = f"""
+    🐋 Size only!
+    {market_type_verbose} #{symbol}
+    
+    current price: {c_close[-1]}
+    average vol: {round(avg_vol / 1000, 1)}K coins
+    
+    size price: {current_price} {direction} {round(distance_to, 2)}% from current price
+    size vol: {round(current_vol / 1000, 1)}K coins
+    
+    <b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
+    
+    <i>Повідомлення не є торговою рекомендацією.</i>
+    @UA_sizes_bot
+    """
+                                    screenshoter_send_beta(symbol, market_type, current_price, personal_message)
+                                    levels_volumes.pop(current_price)
 
-current price: {c_close[-1]}
-average vol: {round(avg_vol/1000, 1)}K coins
+                elif market_type == "f" and (depth is None or the_klines is None):
+                    personal_message = f"⛔️ Main file. Error in {symbol} ({market_type}) data!"
+                    print(personal_message)
+                    personal_bot.send_message(662482931, personal_message)
 
-size price: {item[0]} {direction} {round(distance_per, 2)}% from current price
-size vol: {round(item[1]/1000, 1)}K coins
+            time2 = time.perf_counter()
+            time3 = time2 - time1
+            time3 = float('{:.2f}'.format(time3))
 
-<b>size/avg.vol: {round(item[1] / avg_vol, 1)}</b>
+            if time_log > 0:
+                print(f"{datetime.now().strftime('%H:%M:%S')} {symbol}: {time3} + {float('{:.2f}'.format(reload_time))} s, levels: {len(levels_f)}/{len(levels_s)}")
+                sys.stdout.flush()
 
-<i>Повідомлення не є торговою рекомендацією.</i>
-@UA_sizes_bot
-"""
-                                                screenshoter_send(symbol, market_type, item[0], message_for_screen)
-                                                if c_low[-i] not in static_dict:
-                                                    static_dict.append(c_low[-i])
-                                    break
-
-                    # пошук виключно сайзу
-                    for i in range(110, len(depth) - 110):
-                        current_vol = depth[i][1]
-                        current_price = depth[i][0]
-                        previous_b_values = [depth[j][1] for j in range(i - 20, i)]  # values 20 before
-                        following_b_values = [depth[j][1] for j in range(i + 1, i + 21)]  # values 20 after
-
-                        distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
-                        static_dict = static_f if market_type == "f" else static_s
-
-                        if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= avg_atr_per * 1.5 and current_vol >= avg_vol * 4 and current_price not in static_dict:
-
-                            levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
-
-                            if current_price not in levels_volumes.keys():
-                                levels_volumes.update({current_price: current_vol})
-                            else:
-                                direction = '🔼' if current_price >= c_close[-1] else '🔽'
-                                personal_message = f"""
-🐋 Size only!
-{market_type_verbose} #{symbol}
-
-current price: {c_close[-1]}
-average vol: {round(avg_vol / 1000, 1)}K coins
-
-size price: {current_price} {direction} {round(distance_to, 2)}% from current price
-size vol: {round(current_vol / 1000, 1)}K coins
-
-<b>size/avg.vol: {round(current_vol / avg_vol, 1)}</b>
-
-<i>Повідомлення не є торговою рекомендацією.</i>
-@UA_sizes_bot
-"""
-                                screenshoter_send_beta(symbol, market_type, current_price, personal_message)
-                                levels_volumes.pop(current_price)
-
-            elif market_type == "f" and (depth is None or the_klines is None):
-                personal_message = f"⛔️ Main file. Error in {symbol} ({market_type}) data!"
-                print(personal_message)
-                personal_bot.send_message(662482931, personal_message)
-
-        time2 = time.perf_counter()
-        time3 = time2 - time1
-        time3 = float('{:.2f}'.format(time3))
-
-        if time_log > 0:
-            print(f"{datetime.now().strftime('%H:%M:%S')} {symbol}: {time3} + {float('{:.2f}'.format(reload_time))} s, levels: {len(levels_f)}/{len(levels_s)}")
-            sys.stdout.flush()
-
-        time.sleep(reload_time)
+            time.sleep(reload_time)
 
 
 def clean_old_files(directory, prefix, extension='.png'):
@@ -249,7 +250,7 @@ def monitor_time_and_control_threads():
             clean_old_files('.', prefix='FTbeta_')
 
             reload_time = 58
-            time_log = 0
+            time_log = 1
 
             pairs = get_pairs()
             personal_message = (f"⚙️ Sleep 30 seconds and starting calculation threads...\n"
