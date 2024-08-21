@@ -45,13 +45,9 @@ def send_hit(message):
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
 
-    msg = f'''
-Вся інформація тут:
+    link = "https://docs.google.com/document/d/14brzteeFj9rdpm55vImldH1pAjrUnvJMK4kpoYmDR88/edit?usp=sharing"
+    msg = f"<a href='{link}'>Повна інформація</a>"
 
-https://docs.google.com/document/d/14brzteeFj9rdpm55vImldH1pAjrUnvJMK4kpoYmDR88/edit?usp=sharing
-
-{disclaimer}
-'''
     bot_all.send_message(chat_id, msg, parse_mode="HTML")
     personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на about_bot')
 
