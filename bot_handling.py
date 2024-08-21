@@ -103,5 +103,3 @@ def handle_message(message):
 
 def start_bot():
     bot_all.infinity_polling()
-
-start_bot()
