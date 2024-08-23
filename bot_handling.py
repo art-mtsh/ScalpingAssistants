@@ -58,7 +58,16 @@ def send_donate(message):
 
     msg = f"""
 USDT (TRC20)
-<code>bnb1cldkucvqksvug89kypq7lhgv2seawn5awcdg7d</code>
+<code>TWFr2azmpeC6joRc71MmmgegqF7hFu8yPb</code>   
+
+BNB (SmartChain)
+<code>0xB34D51c69eA573437ece72B3799b141C82B09647</code>
+
+BTC
+<code>bc1qmkn5npw3l0d8l6gfuu28nhcv28gtm65edgke9g</code>
+
+ETH
+<code>0xB34D51c69eA573437ece72B3799b141C82B09647</code>
     """
 
     bot_all.send_message(message.chat.id, msg, parse_mode='HTML')
