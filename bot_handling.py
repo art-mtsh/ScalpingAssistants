@@ -31,6 +31,7 @@ f"""🇺🇦 Слава Україні!
 Поточна сесія аналізу вже активна, тому просто очікуй на повідомлення.
 
 Щоб дізнатись як працює бот - тицяй /about_bot
+Підтримати автора - тицяй /donate
 
 {disclaimer}
 """)
@@ -38,7 +39,7 @@ f"""🇺🇦 Слава Україні!
     personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на start')
 
 @bot_all.message_handler(commands=['about_bot'])
-def send_hit(message):
+def send_about(message):
     chat_id = message.chat.id
     if chat_id not in existed_chat_ids:
         chat_ids.save_new_chat_id(chat_id)
@@ -48,6 +49,20 @@ def send_hit(message):
 
     bot_all.send_message(chat_id, msg, parse_mode="HTML")
     personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на about_bot')
+
+@bot_all.message_handler(commands=['donate'])
+def send_donate(message):
+    chat_id = message.chat.id
+    if chat_id not in existed_chat_ids:
+        chat_ids.save_new_chat_id(chat_id)
+
+    msg = f"""
+USDT (TRC20)
+<code>TByfd8KRMuUmMZrWn2y641x4u4m21kZVCa</code>
+    """
+
+    bot_all.send_message(message.chat.id, msg, parse_mode='HTML')
+    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на donate')
 
 @bot_all.message_handler(commands=['status'])
 def send_status(message):
