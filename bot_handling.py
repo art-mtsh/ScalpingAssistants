@@ -58,7 +58,7 @@ def send_donate(message):
 
     msg = f"""
 USDT (TRC20)
-<code>TByfd8KRMuUmMZrWn2y641x4u4m21kZVCa</code>
+<code>bnb1cldkucvqksvug89kypq7lhgv2seawn5awcdg7d</code>
     """
 
     bot_all.send_message(message.chat.id, msg, parse_mode='HTML')
