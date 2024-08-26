@@ -40,9 +40,6 @@ def save_new_chat_id(new_chat_id=None):
         existed_chat_ids.append(new_chat_id)
     ref.set(existed_chat_ids)
 
-# def get_existed_chat_ids():
-#     return [662482931]
-
 # def save_new_chat_id(new_chat_id=None):
 #     return None
 
