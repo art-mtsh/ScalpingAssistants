@@ -5,6 +5,8 @@ from datetime import datetime
 from threading import Thread
 import telebot
 import threading
+from dotenv import load_dotenv
+load_dotenv()
 
 PERSONAL_TELEGRAM_TOKEN = os.getenv('PERSONAL_TELEGRAM_TOKEN')
 personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)

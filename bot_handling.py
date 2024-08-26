@@ -1,10 +1,9 @@
 # telegram_bot.py
-import logging
-import time
-
 import telebot
 import os
 import chat_ids
+from dotenv import load_dotenv
+load_dotenv()
 
 PERSONAL_TELEGRAM_TOKEN = os.getenv('PERSONAL_TELEGRAM_TOKEN')
 personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)

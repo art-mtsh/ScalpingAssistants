@@ -14,8 +14,9 @@ import threading
 from dotenv import load_dotenv
 
 
-PERSONAL_TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+PERSONAL_TELEGRAM_TOKEN = os.getenv('PERSONAL_TELEGRAM_TOKEN')
 personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
+personal_id = int(os.getenv('PERSONAL_ID'))
 
 # Event to signal threads to stop
 stop_event = Event()
@@ -53,14 +54,14 @@ def search(symbol, reload_time, time_log):
                 except Exception as e:
                     personal_message = f"⛔️ Error in downloading depth for {symbol}({market_type}): {e}"
                     print(personal_message)
-                    personal_bot.send_message(662482931, personal_message)
+                    personal_bot.send_message(personal_id, personal_message)
 
                 try:
                     the_klines = klines(symbol, "1m", 100, market_type)
                 except Exception as e:
                     personal_message = f"⛔️ Error in downloading klines for {symbol}({market_type}): {e}"
                     print(personal_message)
-                    personal_bot.send_message(662482931, personal_message)
+                    personal_bot.send_message(personal_id, personal_message)
 
                 market_type_verbose = 'FUTURES' if market_type == 'f' else 'SPOT'
 
@@ -204,7 +205,7 @@ size vol: {round(current_vol / 1000, 1)}K coins
                 # elif market_type == "f" and (depth is None or the_klines is None):
                 #     personal_message = f"⛔️ Main file. Error in {symbol} ({market_type}) data!"
                 #     print(personal_message)
-                #     personal_bot.send_message(662482931, personal_message)
+                #     personal_bot.send_message(personal_id, personal_message)
 
             time2 = time.perf_counter()
             time3 = time2 - time1
@@ -225,12 +226,12 @@ def clean_old_files(directory, prefix, extension='.png'):
             os.remove(file_path)
         except Exception as e:
             personal_message = f"⚙️ Failed to remove file {file_path}: {e}"
-            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            personal_bot.send_message(chat_id=personal_id, text=personal_message)
             print(personal_message)
 
     personal_message = (f"⚙️ {len(files_to_remove)} images ({prefix}) successfully removed...\n"
                         f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
-    personal_bot.send_message(chat_id=662482931, text=personal_message)
+    personal_bot.send_message(chat_id=personal_id, text=personal_message)
     print(personal_message)
 
 
@@ -243,7 +244,7 @@ def monitor_time_and_control_threads():
             personal_message = (f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. We starting...\n"
                                 f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
 
-            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            personal_bot.send_message(chat_id=personal_id, text=personal_message)
             print(personal_message)
 
             stop_event.clear()
@@ -257,7 +258,7 @@ def monitor_time_and_control_threads():
             pairs = get_pairs()
             personal_message = (f"⚙️ Sleep 30 seconds and starting calculation threads...\n"
                                 f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
-            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            personal_bot.send_message(chat_id=personal_id, text=personal_message)
             print(personal_message)
             time.sleep(30)
 
@@ -269,7 +270,7 @@ def monitor_time_and_control_threads():
 
             personal_message = (f"⚙️ Threads is running...\n"
                                 f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
-            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            personal_bot.send_message(chat_id=personal_id, text=personal_message)
             print(personal_message)
 
             # Monitor until minutes reach 58
@@ -279,7 +280,7 @@ def monitor_time_and_control_threads():
             # Signal threads to stop
             personal_message = (f"⚙️ Current time is {datetime.now().strftime('%H:%M:%S')}. Signal to stop threads sent...\n"
                                 f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
-            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            personal_bot.send_message(chat_id=personal_id, text=personal_message)
             print(personal_message)
             stop_event.set()
 
@@ -289,7 +290,7 @@ def monitor_time_and_control_threads():
 
             personal_message = ("⚙️ All thread have been stopped. Waiting to restart...\n"
                                 f"Alive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}")
-            personal_bot.send_message(chat_id=662482931, text=personal_message)
+            personal_bot.send_message(chat_id=personal_id, text=personal_message)
             print(personal_message)
 
             time.sleep(60)

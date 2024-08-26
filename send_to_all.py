@@ -1,6 +1,8 @@
 import telebot
 import os
 import chat_ids
+from dotenv import load_dotenv
+load_dotenv()
 
 PUBLIC_TELEGRAM_TOKEN = os.getenv('PUBLIC_TELEGRAM_TOKEN')
 public_bot = telebot.TeleBot(PUBLIC_TELEGRAM_TOKEN)

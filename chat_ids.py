@@ -2,6 +2,9 @@ import firebase_admin
 from firebase_admin import credentials, db
 import os
 import base64
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Get the Base64 encoded string from environment variables
 key_json_base64 = os.getenv('KEY_JSON_BASE64')
@@ -36,7 +39,6 @@ def save_new_chat_id(new_chat_id=None):
     if new_chat_id and new_chat_id not in existed_chat_ids:
         existed_chat_ids.append(new_chat_id)
     ref.set(existed_chat_ids)
-
 
 # def get_existed_chat_ids():
 #     return [662482931]

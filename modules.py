@@ -1,10 +1,13 @@
 from datetime import datetime
-
+import os
 import requests
 import telebot
+from dotenv import load_dotenv
+load_dotenv()
 
-TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-personal_bot = telebot.TeleBot(TELEGRAM_TOKEN1)
+PERSONAL_TELEGRAM_TOKEN = os.getenv('PERSONAL_TELEGRAM_TOKEN')
+personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
+personal_id = int(os.getenv('PERSONAL_ID'))
 
 def klines(symbol, frame, request_limit_length, market_type: str):
 	
@@ -35,7 +38,7 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 			if len(c_open) != len(c_high) != len(c_low) != len(c_close) != len(c_volume):
 				msg = (f"⛔️ Length error for klines data for {symbol} ({market_type}), status code {response.status_code}\n"
 					   f"{url}")
-				if market_type == 'f': personal_bot.send_message(662482931, msg)
+				if market_type == 'f': personal_bot.send_message(personal_id, msg)
 				if market_type == 'f': print(msg)
 			else:
 				return [c_time, c_open, c_high, c_low, c_close, avg_vol, buy_volume, sell_volume]
@@ -43,18 +46,18 @@ def klines(symbol, frame, request_limit_length, market_type: str):
 		else:
 			msg = (f"⛔️ Not enough ({response_length}/{request_limit_length}) klines data for {symbol} ({market_type}), status code {response.status_code}\n"
 				   f"{url}")
-			if market_type == 'f': personal_bot.send_message(662482931, msg)
+			if market_type == 'f': personal_bot.send_message(personal_id, msg)
 			if market_type == 'f': print(msg)
 			
 	elif response.status_code == 429:
 		msg = f"⛔️ {symbol} ({market_type}) LIMITS REACHED !!!! 429 CODE !!!!"
-		personal_bot.send_message(662482931, msg)
+		personal_bot.send_message(personal_id, msg)
 		print(msg)
 	
 	else:
 		msg = (f"⛔️ No klines data for {symbol} ({market_type}), status code {response.status_code}\n"
 			   f"{url}")
-		if market_type == 'f': personal_bot.send_message(662482931, msg)
+		if market_type == 'f': personal_bot.send_message(personal_id, msg)
 		if market_type == 'f': print(msg)
 
 
@@ -88,7 +91,7 @@ def order_book(symbol, request_limit_length, market_type: str):
 			if len(bids) == 0 or len(asks) == 0:
 				msg = (f"⛔️ bids=0 or asks=0 for depth data for {symbol} ({market_type}), status code {response.status_code}\n"
 					   f"{url}")
-				if market_type == 'f': personal_bot.send_message(662482931, msg)
+				if market_type == 'f': personal_bot.send_message(personal_id, msg)
 				if market_type == 'f': print(msg)
 			else:
 				return [close, combined_list, combined_list_sorted, max_decimal]
@@ -96,19 +99,19 @@ def order_book(symbol, request_limit_length, market_type: str):
 		else:
 			msg = (f"⛔️ Not enough ({len(response_data['bids'])}/{request_limit_length}) depth data for {symbol} ({market_type}), status code {response.status_code}\n"
 					   f"{url}")
-			if market_type == 'f': personal_bot.send_message(662482931, msg)
+			if market_type == 'f': personal_bot.send_message(personal_id, msg)
 			if market_type == 'f': print(msg)
 
 	elif response.status_code == 429:
 
 		msg = f"⛔️ {symbol} ({market_type}) LIMITS REACHED !!!! 429 CODE !!!!"
-		personal_bot.send_message(662482931, msg)
+		personal_bot.send_message(personal_id, msg)
 		print(msg)
 
 	else:
 		msg = (f"⛔️ No depth data for {symbol} ({market_type}), status code {response.status_code}\n"
 			   f"{url}")
-		if market_type == 'f': personal_bot.send_message(662482931, msg)
+		if market_type == 'f': personal_bot.send_message(personal_id, msg)
 		if market_type == 'f': print(msg)
 
 # print(klines("1000RATSUSDT", "1m", 100, "s"))
@@ -206,50 +209,5 @@ def three_distances(symbol, close, combined_list, max_avg_size, search_distance,
 				print(f"{symbol} {market_type.capitalize()} {-i} candles ago was bounce at price {low[-i]}, current size {size_1}")
 				res.append([distance_3, price_3, size_3, bigger_than])
 				break
-
-	# if high[-1] >= max(high[-1:-181:-1]) and cumulative_delta[-1] <= min(cumulative_delta[-1:-181:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BEARISH 180") #, high[-3]: {high[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif high[-1] >= max(high[-1:-121:-1]) and cumulative_delta[-1] <= min(cumulative_delta[-1:-121:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BEARISH 120") # high[-3]: {high[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif high[-1] >= max(high[-1:-61:-1]) and cumulative_delta[-1] <= min(cumulative_delta[-1:-61:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BEARISH 60") #, high[-3]: {high[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif high[-1] >= max(high[-1:-31:-1]) and cumulative_delta[-1] <= min(cumulative_delta[-1:-31:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BEARISH 30") #, high[-3]: {high[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif high[-1] >= max(high[-1:-11:-1]) and cumulative_delta[-1] <= min(cumulative_delta[-1:-11:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BEARISH 10") #, high[-3]: {high[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	#
-	#
-	# elif low[-1] <= min(low[-1:-181:-1]) and cumulative_delta[-1] >= max(cumulative_delta[-1:-181:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BULLISH 180") #, low[-3]: {low[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif low[-1] <= min(low[-1:-121:-10]) and cumulative_delta[-1] >= max(cumulative_delta[-1:-121:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BULLISH 120") #, low[-3]: {low[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif low[-1] <= min(low[-1:-61:-1]) and cumulative_delta[-1] >= max(cumulative_delta[-1:-61:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BULLISH 60") #, low[-3]: {low[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif low[-1] <= min(low[-1:-31:-1]) and cumulative_delta[-1] >= max(cumulative_delta[-1:-31:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BULLISH 30") #, low[-3]: {low[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-	# elif low[-1] <= min(low[-1:-11:-1]) and cumulative_delta[-1] >= max(cumulative_delta[-1:-11:-1]):
-	# 	bot2.send_message(662482931, f"{datetime.now().strftime('%H:%M:%S')} {symbol} BULLISH 10") #, low[-3]: {low[-1]}: {int(buy_vol[-1])}, {int(sell_vol[-1])}")
-
-	# for i in range(2, len(high)):
-	#
-	# 	if high[-i] >= max(high[-1: -i - 5: -1]) and high[-1: -i - 5: -1].count(high[-i]) >= 5 and market_type == "f":
-	# 		distance_4 = abs(close - high[-i]) / (close / 100)
-	# 		distance_4 = float('{:.2f}'.format(distance_4))
-	#
-	# 		if distance_4 <= 0.4:
-	# 			print(f"{symbol} {market_type.capitalize()} {-i} candles ago was bounce at price {high[-i]}, LEVEL")
-	#
-	# 			res.append([distance_4, high[-i], 1, 1])
-	# 			break
-	#
-	# 	if low[-i] <= min(low[-1: -i - 5: -1]) and low[-1: -i - 5: -1].count(low[-i]) >= 5 and market_type == "f":
-	# 		distance_4 = abs(close - low[-i]) / (close / 100)
-	# 		distance_4 = float('{:.2f}'.format(distance_4))
-	#
-	# 		if distance_4 <= 0.4:
-	# 			print(f"{symbol} {market_type.capitalize()} {-i} candles ago was bounce at price {low[-i]}, LEVEL")
-	#
-	# 			res.append([distance_4, low[-i], 1, 1])
-	# 			break
 
 	return res

@@ -1,17 +1,20 @@
 import telebot
 import matplotlib
-
+import os
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import requests
 import chat_ids
+from dotenv import load_dotenv
+load_dotenv()
 
 # --- TELEGRAM ---
-PERSONAL_TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
+PERSONAL_TELEGRAM_TOKEN = os.getenv('PERSONAL_TELEGRAM_TOKEN')
 personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
+personal_id = int(os.getenv('PERSONAL_ID'))
 
-TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
-bot_all = telebot.TeleBot(TELEGRAM_TOKEN)
+PUBLIC_TELEGRAM_TOKEN = os.getenv('PUBLIC_TELEGRAM_TOKEN')
+bot_all = telebot.TeleBot(PUBLIC_TELEGRAM_TOKEN)
 
 existed_chat_ids = set(chat_ids.get_existed_chat_ids())
 
@@ -26,7 +29,7 @@ def screenshoter_send_beta(symbol, market_type, level, message):
         klines = requests.get(futures_klines) if market_type == 'f' else requests.get(spot_klines)
     except Exception as e:
         msg = f"⛔️ Failed download screenshot data for {symbol} ({market_type}): {e}"
-        personal_bot.send_message(chat_id=662482931, text=msg)
+        personal_bot.send_message(chat_id=personal_id, text=msg)
         print(msg)
         return None
 
@@ -46,13 +49,13 @@ def screenshoter_send_beta(symbol, market_type, level, message):
         else:
             msg = (f"⛔️ Empty screenshot data for {symbol} ({market_type}), status code {klines.status_code}\n"
                    f"{klines}")
-            personal_bot.send_message(chat_id=662482931, text=msg)
+            personal_bot.send_message(chat_id=personal_id, text=msg)
             print(msg)
             return None
     else:
         msg = (f"⛔️ No screenshot data for {symbol} ({market_type}), status code {klines.status_code}\n"
                f"{klines}")
-        personal_bot.send_message(chat_id=662482931, text=msg)
+        personal_bot.send_message(chat_id=personal_id, text=msg)
         print(msg)
         return None
 
@@ -107,13 +110,13 @@ def screenshoter_send_beta(symbol, market_type, level, message):
                     bot_all.send_photo(chat_id, pic, message, parse_mode="HTML")
             except Exception as e:
                 msg = f"⛔️ Failed to send photo to {chat_id}: {e}"
-                personal_bot.send_message(chat_id=662482931, text=msg)
+                personal_bot.send_message(chat_id=personal_id, text=msg)
                 print(msg)
 
     else:
         msg = (f"⛔️ Failed screenshot data for {symbol} ({market_type}), status code {klines.status_code}\n"
                f"{klines}")
-        personal_bot.send_message(chat_id=662482931, text=msg)
+        personal_bot.send_message(chat_id=personal_id, text=msg)
         print(msg)
         return None
 
