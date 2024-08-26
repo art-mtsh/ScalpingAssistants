@@ -1,2 +1,5 @@
+# Environment Variables
 /.env
+
+# Temporary files
 /key.json
