@@ -39,6 +39,8 @@ def search(symbol, reload_time, time_log):
     c_room = 30  # кімната зліва
     d_room = 10  # вікно зверху і знизу стакану
     atr_dis = 1.5  # мультиплікатор відстані до сайзу в ATR
+    size_mpl = 1.3 # мультиплікатор максимального сайзу
+    vol_mpl = 5 # мультиплікатор відносності об'єму
 
     while not stop_event.is_set():
         if os.getenv('BOT_STATE') == "run":
@@ -85,7 +87,7 @@ def search(symbol, reload_time, time_log):
                                         distance_per = abs(c_high[-i] - c_close[-1]) / (c_close[-1] / 100)
                                         distance_per = float('{:.2f}'.format(distance_per))
 
-                                        if item[1] >= max(lower_sizes) * 1.5 and item[1] >= max(higher_sizes) * 1.5 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 3:
+                                        if all(item[1] >= dom * size_mpl for dom in lower_sizes+higher_sizes) and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * vol_mpl:
 
                                             levels_dict = levels_f if market_type == "f" else levels_s
                                             static_dict = static_f if market_type == "f" else static_s
@@ -130,7 +132,7 @@ size vol: {round(item[1]/1000, 1)}K coins
                                         distance_per = abs(c_low[-i] - c_close[-1]) / (c_close[-1] / 100)
                                         distance_per = float('{:.2f}'.format(distance_per))
 
-                                        if item[1] >= max(lower_sizes) * 1.5 and item[1] >= max(higher_sizes) * 1.5 and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * 3:
+                                        if all(item[1] >= dom * size_mpl for dom in lower_sizes+higher_sizes) and distance_per <= atr_dis * avg_atr_per and item[1] >= avg_vol * vol_mpl:
 
                                             levels_dict = levels_f if market_type == "f" else levels_s
                                             static_dict = static_f if market_type == "f" else static_s
@@ -172,7 +174,7 @@ size vol: {round(item[1]/1000, 1)}K coins
                             distance_to = abs(current_price - c_close[-1]) / (c_close[-1] / 100)
                             static_dict = static_f if market_type == "f" else static_s
 
-                            if all(current_vol > b * 2 for b in previous_b_values + following_b_values) and distance_to <= atr_dis * avg_atr_per and current_vol >= avg_vol * 5 and current_price not in static_dict:
+                            if all(current_vol >= b * size_mpl for b in previous_b_values + following_b_values) and distance_to <= atr_dis * avg_atr_per and current_vol >= avg_vol * vol_mpl and current_price not in static_dict:
 
                                 levels_volumes = levels_f_volumes if market_type == 'f' else levels_s_volumes
 
