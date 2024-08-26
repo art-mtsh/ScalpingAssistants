@@ -11,6 +11,7 @@ from screenshoterV2 import screenshoter_send
 from screenshoterV3_beta import screenshoter_send_beta
 from bot_handling import start_bot
 import threading
+from dotenv import load_dotenv
 
 
 PERSONAL_TELEGRAM_TOKEN = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
@@ -297,6 +298,7 @@ def monitor_time_and_control_threads():
 
 
 if __name__ == '__main__':
+    load_dotenv()
 
     bot_thread = Thread(target=start_bot)
     bot_thread.start()

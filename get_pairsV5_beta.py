@@ -6,8 +6,9 @@ from threading import Thread
 import telebot
 import threading
 
-TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-personal_bot = telebot.TeleBot(TELEGRAM_TOKEN1)
+PERSONAL_TELEGRAM_TOKEN = os.getenv('PERSONAL_TELEGRAM_TOKEN')
+personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
+personal_id = int(os.getenv('PERSONAL_ID'))
 
 excluded = ['OMGUSDT', 'BTCUSDT', 'ETHUSDT', 'VANRYUSDT']
 
@@ -21,7 +22,7 @@ def calculate_pairs(pairs_dict, shared_results):
         except Exception as e:
             personal_message = f"⛔️ Error in downloading klines (get_pairs) for {symbol}: {e}"
             print(personal_message)
-            personal_bot.send_message(662482931, personal_message)
+            personal_bot.send_message(personal_id, personal_message)
 
         if klines.status_code == 200:
             response_length = len(klines.json()) if klines.json() is not None else 0
@@ -78,7 +79,7 @@ def get_pairs():
         pair_thread.start()
 
     personal_message = f"⚙️ Getting pairs...\nAlive threads: {len([thread.name for thread in threading.enumerate() if thread.is_alive()])}"
-    personal_bot.send_message(chat_id=662482931, text=personal_message)
+    personal_bot.send_message(chat_id=personal_id, text=personal_message)
     print(personal_message)
 
     for pair_thread in pairs_threads:
@@ -101,7 +102,7 @@ def get_pairs():
 
 {pairs_to_message}
 """
-    personal_bot.send_message(chat_id=662482931, text=msg, parse_mode="HTML")
+    personal_bot.send_message(chat_id=personal_id, text=msg, parse_mode="HTML")
 
     return result
 

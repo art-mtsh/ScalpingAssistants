@@ -6,15 +6,13 @@ import telebot
 import os
 import chat_ids
 
-TELEGRAM_TOKEN1 = '5657267406:AAExhEvjG3tjb0KL6mTM9otoFiL6YJ_1aSA'
-personal_bot = telebot.TeleBot(TELEGRAM_TOKEN1)
+PERSONAL_TELEGRAM_TOKEN = os.getenv('PERSONAL_TELEGRAM_TOKEN')
+personal_bot = telebot.TeleBot(PERSONAL_TELEGRAM_TOKEN)
+personal_id = int(os.getenv('PERSONAL_ID'))
 
-TELEGRAM_TOKEN = '7458821979:AAEzkL3X-U6BVKwoS1Vnh5bNqMZYizivTIw'
-bot_all = telebot.TeleBot(TELEGRAM_TOKEN)
+PUBLIC_TELEGRAM_TOKEN = os.getenv('PUBLIC_TELEGRAM_TOKEN')
+bot_all = telebot.TeleBot(PUBLIC_TELEGRAM_TOKEN)
 disclaimer = '<i>Торгівля криптовалютами має високі ризики та може призвести до значних фінансових втрат! Уся відповідальність лежить на користувачеві бота.</i>'
-
-# File to store user chat IDs
-chat_ids_file = "user_chat_ids.txt"
 
 # Load existing chat IDs
 existed_chat_ids = set(chat_ids.get_existed_chat_ids())
@@ -36,7 +34,7 @@ f"""🇺🇦 Слава Україні!
 {disclaimer}
 """)
     bot_all.send_message(chat_id, msg, parse_mode="HTML")
-    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на start')
+    personal_bot.send_message(personal_id, f'🙂 Користувач {chat_id} натиснув на start')
 
 @bot_all.message_handler(commands=['about_bot'])
 def send_about(message):
@@ -48,7 +46,7 @@ def send_about(message):
     msg = f"<a href='{link}'>Повна інформація</a>"
 
     bot_all.send_message(chat_id, msg, parse_mode="HTML")
-    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на about_bot')
+    personal_bot.send_message(personal_id, f'🙂 Користувач {chat_id} натиснув на about_bot')
 
 @bot_all.message_handler(commands=['donate'])
 def send_donate(message):
@@ -71,7 +69,7 @@ ETH
     """
 
     bot_all.send_message(message.chat.id, msg, parse_mode='HTML')
-    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на donate')
+    personal_bot.send_message(personal_id, f'🙂 Користувач {chat_id} натиснув на donate')
 
 @bot_all.message_handler(commands=['status'])
 def send_status(message):
@@ -98,21 +96,21 @@ def send_status(message):
     msg = msg1 if os.getenv('BOT_STATE') == "run" else msg2
 
     bot_all.send_message(message.chat.id, msg, parse_mode="HTML")
-    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} натиснув на status')
+    personal_bot.send_message(personal_id, f'🙂 Користувач {chat_id} натиснув на status')
 
 @bot_all.message_handler(commands=['pause'])
 def bot_pause(message):
     chat_id = message.chat.id
-    if chat_id == 662482931:
+    if chat_id == personal_id:
         os.environ['BOT_STATE'] = "pause"
-        personal_bot.send_message(662482931, f'⏸ BOT_STATE = pause')
+        personal_bot.send_message(personal_id, f'⏸ BOT_STATE = pause')
 
 @bot_all.message_handler(commands=['run'])
 def bot_pause(message):
     chat_id = message.chat.id
-    if chat_id == 662482931:
+    if chat_id == personal_id:
         os.environ['BOT_STATE'] = "run"
-        personal_bot.send_message(662482931, f'▶️ BOT_STATE = run')
+        personal_bot.send_message(personal_id, f'▶️ BOT_STATE = run')
 
 @bot_all.message_handler(func=lambda message: True)
 def handle_message(message):
@@ -120,7 +118,7 @@ def handle_message(message):
     chat_id = message.chat.id
     pic = open(f'pig.webm', 'rb')
     bot_all.send_sticker(chat_id, pic)
-    personal_bot.send_message(662482931, f'🙂 Користувач {chat_id} шось написав і отримав свиню')
+    personal_bot.send_message(personal_id, f'🙂 Користувач {chat_id} шось написав і отримав свиню')
 
 
 def start_bot():
