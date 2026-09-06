@@ -46,7 +46,7 @@ def load_env(path):
 def get_repeat_counter():
     params = load_env(ENV_PATH)
     try:
-        return int(params.get("REPEAT_COUNTER", 5))
+        return int(params.get("REPEAT_COUNTER"))
     except (TypeError, ValueError):
         return 5
 
