@@ -4,12 +4,12 @@ import os
 import aiohttp
 
 from bot_setup.bot_setup import bot
-from mutual_variables.dictionaries import coins_to_ignore
+from database_v2 import set_coin_status
 
 
 async def get_klines(symbol, frame, market_type: str) -> tuple:
-    perfect_klines_len = int(os.getenv('KLINES_LEN', 240))
-    min_klines_len = int(os.getenv('MIN_KLINES_LEN', 60))
+    perfect_klines_len = int(os.getenv('KLINES_LEN'))
+    min_klines_len = int(os.getenv('MIN_KLINES_LEN'))
 
     futures_klines = f'https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval={frame}&limit={perfect_klines_len}'
     spot_klines = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval={frame}&limit={perfect_klines_len}'
@@ -66,7 +66,7 @@ async def get_klines(symbol, frame, market_type: str) -> tuple:
 
                 else:
                     print(f'Not full klines for {symbol}: {response_length}/{int(os.getenv('MIN_KLINES_LEN', 150))}\n{url}')
-                    coins_to_ignore.add(symbol)
+                    set_coin_status(symbol, 2)
                     return ()
 
             elif response.status == 429:

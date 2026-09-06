@@ -23,7 +23,7 @@ def validate_extremum(e_type: str, e_index: int, e_list: list) -> bool | None:
 
 
 def hlhl_search(c_high, c_low):
-    range_len = int(os.getenv('MIN_KLINES_LEN', 150))
+    range_len = int(os.getenv('MIN_KLINES_LEN'))
     chart_range = max(c_high[-range_len:]) - min(c_low[-range_len:])
 
     for fourth_point_index in range(start_search, start_search + search_window):
@@ -45,7 +45,7 @@ def hlhl_search(c_high, c_low):
 
 
 def lhlh_search(c_high, c_low):
-    range_len = int(os.getenv('MIN_KLINES_LEN', 150))
+    range_len = int(os.getenv('MIN_KLINES_LEN'))
     chart_range = max(c_high[-range_len:]) - min(c_low[-range_len:])
 
     for fourth_point_index in range(start_search, start_search + search_window):

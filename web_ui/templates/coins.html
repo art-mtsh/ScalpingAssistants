@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coins</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='coins.css') }}">
+</head>
+<body>
+
+<div class="topbar">
+  <h1><span class="brand-icon">🪙</span> Coins</h1>
+  <div class="controls">
+    <input id="search" type="text" placeholder="Пошук по монеті..." autocomplete="off">
+    <span class="status-line" id="rowCount"></span>
+    <a class="nav-btn" href="{{ url_for('index') }}">← Sizes Monitor</a>
+    <button class="theme-toggle" id="themeToggle">🌙 / ☀️</button>
+  </div>
+</div>
+
+<div class="error-banner" id="errorBanner"></div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Coin</th>
+        <th>Tick size</th>
+        <th>Avg ATR</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr><td colspan="5" class="empty">Завантаження...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+<script src="{{ url_for('static', filename='coins.js') }}"></script>
+
+</body>
+</html>

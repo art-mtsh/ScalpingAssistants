@@ -4,12 +4,12 @@ import os
 import aiohttp
 
 from bot_setup.bot_setup import bot
-from mutual_variables.dictionaries import coins_to_ignore
+from database_v2 import set_coin_status
 
 
 async def order_book(symbol, market_type: str) -> list:
-    perfect_depth_len = int(os.getenv('DEPTH_LEN', 500))
-    min_depth_len = int(os.getenv('MIN_DEPTH_LEN', 100))
+    perfect_depth_len = int(os.getenv('DEPTH_LEN'))
+    min_depth_len = int(os.getenv('MIN_DEPTH_LEN'))
 
     futures_order_book = f"https://fapi.binance.com/fapi/v1/depth?symbol={symbol}&limit={perfect_depth_len}"
     spot_order_book = f"https://api.binance.com/api/v3/depth?symbol={symbol}&limit={perfect_depth_len}"
@@ -27,7 +27,7 @@ async def order_book(symbol, market_type: str) -> list:
             if response.status == 200:
                 response_data = await response.json()
 
-                if len(response_data['bids']) >= min_depth_len:
+                if len(response_data['bids']) >= min_depth_len and len(response_data['asks']) >= min_depth_len:
                     bids = response_data.get('bids')
                     asks = response_data.get('asks')
                     close = float(asks[0][0])
@@ -50,7 +50,7 @@ async def order_book(symbol, market_type: str) -> list:
 
                 else:
                     print(f'Not full order book for {symbol}: bids={len(response_data['bids'])}, asks={len(response_data['asks'])}')
-                    coins_to_ignore.add(symbol)
+                    set_coin_status(symbol, 2)
                     print(f'Added {symbol} to ignore list')
                     return []
 

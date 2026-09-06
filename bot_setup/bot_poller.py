@@ -24,44 +24,45 @@ async def comm_coins(message: types.Message):
     text = f"`Updated: {t}\n\n{msg}\n`"
     await message.answer(text, parse_mode='MarkdownV2')
 
-@bot_dispatcher.message(Command(commands=("list")))
-async def comm_list(message: types.Message):
 
-    # Flatten all updates into one list
-    all_updates = []
-    for key, params in coin_updates.items():
-        coin, price, direction = key
-        all_updates.append((coin, price, direction, params))
-
-    # Sort by numbers['upd_time'] descending
-    all_updates.sort(key=lambda x: x[3]['updated'], reverse=True)
-
-    msg_lines = []
-    for coin, price, direction, numbers in all_updates:
-        empty_distances = sum(1 for i in all_updates if i[0] == coin and i[3]['distance_color'] == status_colors['empty'])
-        empty_sizes = sum(1 for i in all_updates if i[0] == coin and i[3]['size_color'] == status_colors['empty'])
-        empty_overall = sum(1 for i in all_updates if i[0] == coin and i[3]['deprecated'])
-
-        if not numbers['deprecated']:
-            dir_veb = "🔼" if direction == 'up' else "🔽"
-
-            msg = (f"{numbers['updated'].strftime('%H:%M'):^5}"
-                f"{coin[:-4]:^8} "
-                f"{numbers['counter']:<2} {numbers['signal']}"
-                f"{price:^9}"
-                f"{dir_veb} {numbers.get('distance_color', 'n/a')} "
-                f"{numbers['distance_value']:<5}% {f'{numbers['distance_min']}-{numbers['distance_max']}':<9} "
-                f"{numbers.get('size_color', 'n/a')} "
-                f"${numbers['size_value']:<3} ({f'{numbers['size_min']}-{numbers['size_max']}':<7}) K\n"
-                f"{coin} deprecated: distances={empty_distances}, sizes={empty_sizes}, overall={empty_overall}")
-
-            msg_lines.append(msg)
-
-    msg = "\n".join(msg_lines) if len(msg_lines) != 0 else 'No recent updates'
-
-    # Remove the html import and pre tags
-    text = f"```\n{msg}\n```"
-    await message.answer(text, parse_mode='MarkdownV2')
+# @bot_dispatcher.message(Command(commands=("list")))
+# async def comm_list(message: types.Message):
+#
+#     # Flatten all updates into one list
+#     all_updates = []
+#     for key, params in coin_updates.items():
+#         coin, price, direction = key
+#         all_updates.append((coin, price, direction, params))
+#
+#     # Sort by numbers['upd_time'] descending
+#     all_updates.sort(key=lambda x: x[3]['updated'], reverse=True)
+#
+#     msg_lines = []
+#     for coin, price, direction, numbers in all_updates:
+#         empty_distances = sum(1 for i in all_updates if i[0] == coin and i[3]['distance_color'] == status_colors['empty'])
+#         empty_sizes = sum(1 for i in all_updates if i[0] == coin and i[3]['size_color'] == status_colors['empty'])
+#         empty_overall = sum(1 for i in all_updates if i[0] == coin and i[3]['deprecated'])
+#
+#         if not numbers['deprecated']:
+#             dir_veb = "🔼" if direction == 'up' else "🔽"
+#
+#             msg = (f"{numbers['updated'].strftime('%H:%M'):^5}"
+#                 f"{coin[:-4]:^8} "
+#                 f"{numbers['counter']:<2} {numbers['signal']}"
+#                 f"{price:^9}"
+#                 f"{dir_veb} {numbers.get('distance_color', 'n/a')} "
+#                 f"{numbers['distance_value']:<5}% {f'{numbers['distance_min']}-{numbers['distance_max']}':<9} "
+#                 f"{numbers.get('size_color', 'n/a')} "
+#                 f"${numbers['size_value']:<3} ({f'{numbers['size_min']}-{numbers['size_max']}':<7}) K\n"
+#                 f"{coin} deprecated: distances={empty_distances}, sizes={empty_sizes}, overall={empty_overall}")
+#
+#             msg_lines.append(msg)
+#
+#     msg = "\n".join(msg_lines) if len(msg_lines) != 0 else 'No recent updates'
+#
+#     # Remove the html import and pre tags
+#     text = f"```\n{msg}\n```"
+#     await message.answer(text, parse_mode='MarkdownV2')
 
 
 async def poll():

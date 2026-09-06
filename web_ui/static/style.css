@@ -1,0 +1,235 @@
+:root[data-theme="dark"] {
+  --bg: #0f1115;
+  --bg-panel: #161923;
+  --bg-header: #1c2030;
+  --text: #e6e8ee;
+  --text-dim: #8a90a2;
+  --border: #2a2f3d;
+  --row-hover: #232838;
+  --accent: #4f8dfd;
+  --input-bg: #1c2030;
+
+  --status-1-bg: #0f5132;
+  --status-1-text: #7dffb0;
+  --status-2-bg: #133a24;
+  --status-2-text: #6fd99a;
+  --status-5-bg: #5a1a1a;
+  --status-5-text: #ff9a9a;
+  --row-repeat-bg: rgba(79, 141, 253, 0.12);
+  --row-repeat-border: #4f8dfd;
+
+  --coin-autoban-bg: #4a3410;
+  --coin-autoban-text: #ffb066;
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f7;
+  --bg-panel: #ffffff;
+  --bg-header: #eef0f4;
+  --text: #1c1f26;
+  --text-dim: #6b7280;
+  --border: #dde1e8;
+  --row-hover: #eef2ff;
+  --accent: #2f6fed;
+  --input-bg: #ffffff;
+
+  --status-1-bg: #d3f9e0;
+  --status-1-text: #0d7a3e;
+  --status-2-bg: #e6f9ec;
+  --status-2-text: #1f9450;
+  --status-5-bg: #fbdada;
+  --status-5-text: #b3261e;
+  --row-repeat-bg: rgba(47, 111, 237, 0.08);
+  --row-repeat-border: #2f6fed;
+
+  --coin-autoban-bg: #ffe9d1;
+  --coin-autoban-text: #b3620d;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
+}
+
+/* ---- top bar (не скролиться, завжди на місці) ---- */
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  z-index: 20;
+}
+.topbar h1 {
+  font-size: 18px;
+  margin: 0;
+  white-space: nowrap;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#search {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  min-width: 200px;
+}
+#search:focus { outline: none; border-color: var(--accent); }
+.theme-toggle {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+
+/* Кнопка-посилання для переходу між сторінками (напр. "Coins" / "Sizes Monitor") */
+.nav-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.nav-btn:hover {
+  border-color: var(--accent);
+  background: var(--row-hover);
+}
+
+.status-line {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.error-banner {
+  flex: 0 0 auto;
+  margin: 12px 20px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--status-5-bg);
+  color: var(--status-5-text);
+  font-size: 13px;
+  display: none;
+}
+
+/* ---- скролюваний контейнер з таблицею ---- */
+.table-wrap {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  /* Важливо: без padding-top! position: sticky прилипає до padding-edge
+     контейнера, тому будь-який верхній padding тут лишався б назавжди
+     видимим "вікном", крізь яке проглядали/блимали прогорнуті рядки. */
+  padding: 0 20px 16px;
+}
+
+/*
+  border-collapse: collapse у поєднанні з position: sticky дає в браузерах
+  відомий рендер-баг - тонку лінію-щілину на межі шапки, крізь яку
+  "просвічують"/блимають рядки під час скролу.
+  Тому тут border-collapse: separate + border-spacing: 0, а бордер
+  малюється через box-shadow (не ламає sticky-позиціонування).
+*/
+table {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--bg-panel);
+  font-size: 13px;
+}
+
+/* Закруглення кутів без border-radius на самій table (щоб не ловити баги overflow+sticky) */
+thead th:first-child { border-top-left-radius: 10px; }
+thead th:last-child { border-top-right-radius: 10px; }
+tbody tr:last-child td:first-child { border-bottom-left-radius: 10px; }
+tbody tr:last-child td:last-child { border-bottom-right-radius: 10px; }
+
+/* Закріплений заголовок таблиці відносно .table-wrap, а не всієї сторінки */
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-header);
+  text-align: center;
+  padding: 10px 12px;
+  white-space: nowrap;
+  color: var(--text-dim);
+  font-weight: 600;
+  box-shadow: inset 0 -1px 0 var(--border);
+  z-index: 5;
+}
+
+tbody td {
+  padding: 8px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr {
+  transition: background 0.12s ease-in-out;
+}
+tbody tr:hover {
+  background: var(--row-hover);
+}
+tr.repeat-highlight {
+  background: var(--row-repeat-bg);
+  box-shadow: inset 3px 0 0 var(--row-repeat-border);
+}
+tr.repeat-highlight:hover {
+  background: var(--row-hover);
+}
+
+.status-cell {
+  font-weight: 700;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.status-1 { background: var(--status-1-bg); color: var(--status-1-text); }
+.status-2 { background: var(--status-2-bg); color: var(--status-2-text); }
+.status-5 { background: var(--status-5-bg); color: var(--status-5-text); }
+
+.count-total {
+  color: var(--text-dim);
+}
+
+.dir-up {
+  color: var(--status-1-text);
+  font-weight: 700;
+}
+.dir-down {
+  color: var(--status-5-text);
+  font-weight: 700;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-dim);
+}

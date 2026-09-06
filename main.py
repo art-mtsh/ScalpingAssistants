@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from database_v2 import update_offline_coins, create_table, get_coins
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR + '/envs/', "params.env"))
@@ -13,17 +14,16 @@ import matplotlib
 import traceback
 from main_log_config import setup_logger
 from bot_setup.bot_poller import poll
-from main_logic.sizes import *
+from main_logic.sizes_v2 import *
 from binance.get_pairs_async import *
-from mutual_variables.dictionaries import coin_updates, starting_parameters, coins_to_ignore
-from database import reset_stale_continuous_counters
+from mutual_variables.dictionaries import coin_updates, starting_parameters
 
 matplotlib.set_loglevel("WARNING")
 setup_logger(os.path.dirname(__file__))
 
 
 async def restarter():
-    refresh_hours = float(os.getenv('UPDATE_TIME_HOURS', '1.0'))
+    refresh_hours = float(os.getenv('UPDATE_TIME_HOURS'))
     while True:
         await asyncio.sleep(3600 * refresh_hours)
         terminator.set()
@@ -41,13 +41,6 @@ async def restart_polling():
         finally:
             await asyncio.sleep(5)
 
-async def stale_counter_cleaner():
-    while True:
-        await asyncio.to_thread(
-            reset_stale_continuous_counters,
-            5
-        )
-        await asyncio.sleep(60)
 
 async def healthcheck_pinger():
     healthcheck_url = os.getenv("HEALTHCHECK_URL")
@@ -61,7 +54,8 @@ async def healthcheck_pinger():
             try:
                 async with session.get(healthcheck_url, timeout=30) as response:
                     if response.status == 200:
-                        print("Healthcheck ping sent successfully")
+                        # print("Healthcheck ping sent successfully")
+                        pass
                     else:
                         print(f"Healthcheck ping failed: HTTP {response.status}")
 
@@ -70,66 +64,97 @@ async def healthcheck_pinger():
 
             await asyncio.sleep(600)
 
+def calculate_reload_time(coins_number: int) -> int:
+    depth_len =  int(os.getenv('DEPTH_LEN'))
+
+    if depth_len <= 100:
+        depth_weight = 5
+    elif depth_len <= 500:
+        depth_weight = 25
+    elif depth_len <= 1000:
+        depth_weight = 50
+    else:
+        depth_weight = 250
+
+    klines_weight = 2
+
+    cycle_weight = (depth_weight + klines_weight) * coins_number
+
+    reload_time = cycle_weight * 60 / 6000
+    reload_time = 10 if reload_time < 10 else reload_time
+
+    return max(1, int(reload_time * 0.8)) # 0.8 - коефіцієнт безпеки
+
+def params_for_bot():
+    starting_parameters['upd_time'] = datetime.now().replace(microsecond=0)
+    starting_parameters['params'] = (f"Running with following parameters:\n\n"
+
+                                     f"Filter's timeframe: {os.getenv("TF")}m\n"
+                                     f"Update time: {os.getenv('UPDATE_TIME_HOURS')} hr\n"
+                                     f"Ticksize filter: {os.getenv("TICKSIZE_FILTER")}\n"
+                                     f"ATR filter: {os.getenv("ATR_FILTER")}\n"
+                                     f"Pairs limit: {os.getenv("PAIRS_LIMIT")}\n"
+                                     f"Spot verified: {os.getenv("SPOT_VERIFIED")}\n\n"
+
+                                     f"Sizes block:\n"
+                                     f"Depth length: {os.getenv("DEPTH_LEN")}\n"
+                                     f"Depth (min) length: {os.getenv("MIN_DEPTH_LEN")}\n"
+                                     f"Klines length: {os.getenv("KLINES_LEN")}\n"
+                                     f"Klines (min) length: {os.getenv("MIN_KLINES_LEN")}\n"
+                                     f"Room to the left: {os.getenv("C_ROOM")}\n"
+                                     f"Room upper/lower in DOM: {os.getenv("D_ROOM")}\n"
+                                     f"Wiggle room: {os.getenv("WIGGLE_ROOM_PERC")}%\n"
+                                     f"Absolute dis: {os.getenv("ABS_DIS")}\n\n"
+                                     f"Size among others: x{os.getenv("SIZE_MPL")}\n"
+                                     f"Size x Vol mpl (DOM): x{os.getenv("VOL_MPL_DEPTH")}\n"
+                                     f"Times to repeat: {os.getenv("REPEAT_COUNTER")}\n\n"
+
+                                     f"Divergences block:\n"
+                                     f"Look for extermum in last: {os.getenv("EXTREMUM_WINDOW")} candles\n"
+                                     f"Extr. RttL: {os.getenv("EXTREMUM_ROOM_LEFT")}\n"
+                                     f"Vertical price range filter: {os.getenv("PRICE_RANGE_WINDOW")}\n"
+                                     f"Part of a vertical range: 1/{os.getenv("PRICE_RANGE_PART")}\n"
+                                     f"Delta RttL: {os.getenv("DELTA_WINDOW")}")
+
 
 async def main():
-    # cleanup_old_records(20)
-
     asyncio.create_task(healthcheck_pinger())
     asyncio.create_task(restarter())
     asyncio.create_task(restart_polling())
-    asyncio.create_task(stale_counter_cleaner())
     last_restart_hour = 0
 
     while True:
+        params_for_bot()
         # Clear ignoring set of coins
         if last_restart_hour != datetime.now().hour:
-            coins_to_ignore.clear()
             last_restart_hour = datetime.now().hour
 
-        # Start trading tasks
-        print(f"Coins to ignore: {coins_to_ignore}")
-        live_coins, coins_verb = await get_pairs('USDT', list(coins_to_ignore))
-        starting_parameters['coins'] = coins_verb
-        starting_parameters['upd_time'] = datetime.now().replace(microsecond=0)
-        starting_parameters['params'] = (f"Running with following parameters:\n\n"
+        print("Updating pairs")
+        await get_pairs_async()
 
-                                         f"Filter's timeframe: {os.getenv("TF")}m\n"
-                                         f"Update time: {os.getenv('UPDATE_TIME_HOURS')} hr\n"
-                                         f"Ticksize filter: {os.getenv("TICKSIZE_FILTER")}\n"
-                                         f"ATR filter: {os.getenv("ATR_FILTER")}\n"
-                                         f"Pairs limit: {os.getenv("PAIRS_LIMIT")}\n"
-                                         f"Spot verified: {os.getenv("SPOT_VERIFIED")}\n\n"
-
-                                         f"Sizes block:\n"
-                                         f"Depth length: {os.getenv("DEPTH_LEN")}\n"
-                                         f"Depth (min) length: {os.getenv("MIN_DEPTH_LEN")}\n"
-                                         f"Klines length: {os.getenv("KLINES_LEN")}\n"
-                                         f"Klines (min) length: {os.getenv("MIN_KLINES_LEN")}\n"
-                                         f"Room to the left: {os.getenv("C_ROOM")}\n"
-                                         f"Room upper/lower in DOM: {os.getenv("D_ROOM")}\n"
-                                         f"Wiggle room: {os.getenv("WIGGLE_ROOM_PERC")}%\n"
-                                         f"Absolute dis: {os.getenv("ABS_DIS")}\n\n"
-                                         f"Size among others: x{os.getenv("SIZE_MPL")}\n"
-                                         f"Size x Vol mpl (DOM): x{os.getenv("VOL_MPL_DEPTH")}\n"
-                                         f"Times to repeat: {os.getenv("REPEAT_COUNTER")}\n\n"
-
-                                         f"Divergences block:\n"
-                                         f"Look for extermum in last: {os.getenv("EXTREMUM_WINDOW")} candles\n"
-                                         f"Extr. RttL: {os.getenv("EXTREMUM_ROOM_LEFT")}\n"
-                                         f"Vertical price range filter: {os.getenv("PRICE_RANGE_WINDOW")}\n"
-                                         f"Part of a vertical range: 1/{os.getenv("PRICE_RANGE_PART")}\n"
-                                         f"Delta RttL: {os.getenv("DELTA_WINDOW")}")
-
-        print(f'Starting with {len(live_coins)} coins')
+        print("Pause for 30 seconds")
         await asyncio.sleep(30)
-        print(f'Processing search')
-        search_tasks = [asyncio.create_task(sizes_search(coin)) for coin in live_coins]
-        await asyncio.gather(*search_tasks)
-        print(f'Search loop ended')
 
+        await asyncio.to_thread(update_offline_coins)
+
+        live_coins = get_coins()
+
+        reload_time = calculate_reload_time(len(live_coins))
+
+        print(f'Starting with {len(live_coins)} coins and reload time: {reload_time}')
+
+        search_tasks = [
+            asyncio.create_task(main_search(coin, reload_time))
+            for coin in live_coins
+        ]
+
+        await asyncio.gather(*search_tasks)
+
+        print(f'Search loop ended')
         coin_updates.clear()
         terminator.clear()
 
 
 if __name__ == "__main__":
+    create_table()
     asyncio.run(main())
