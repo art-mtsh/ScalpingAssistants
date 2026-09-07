@@ -21,9 +21,7 @@ async def order_book(symbol, market_type: str) -> list:
             # print(f"Weight used by {symbol} for book: {response.headers.get('x-mbx-used-weight-1m')}")
 
             w = int(response.headers.get('x-mbx-used-weight-1m', 1000))
-            print(f'w={w}')
-            response = await response.json()
-            print(f'response={response}')
+            print(w)
             if w > 2000:
                 print(f"WARNING! Order book request reached {w}")
             elif w > 5000:

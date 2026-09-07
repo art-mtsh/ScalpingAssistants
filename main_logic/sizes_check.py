@@ -204,7 +204,7 @@ class SizesManager:
                         f"{self.coin}, "
                         f"counter={continuous_count}, "
                         f"size_price={size_price}, "
-                        f"size_dir={'up' if size_dir == 1 else 'down'}, "
+                        f"size_dir={'up' if size_dir == 1 else 'down'}"
                     )
             else:
                 await asyncio.to_thread(remove_size, self.coin, size_price, 4)
