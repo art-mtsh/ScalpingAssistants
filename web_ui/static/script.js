@@ -64,8 +64,8 @@ function formatDate(dateStr) {
 
 // Стрілочка напрямку: 1 -> вгору, 0 -> вниз
 function directionArrow(direction) {
-  if (direction === 1 || direction === '1') return '<span class="dir-up">↑</span>';
-  if (direction === 0 || direction === '0') return '<span class="dir-down">↓</span>';
+  if (direction === 1 || direction === '1') return '<span class="dir-up">📈</span>';
+  if (direction === 0 || direction === '0') return '<span class="dir-down">📉</span>';
   return '';
 }
 
