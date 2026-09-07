@@ -2,7 +2,7 @@ import os
 import asyncio
 import aiohttp
 
-from database_v2 import add_coin
+from database_v2 import add_coin_to_coins
 
 
 async def fetch_klines(session, url) -> dict:
@@ -121,12 +121,7 @@ async def calculate_pairs(
                 else 0
             )
 
-            add_coin(
-                symbol,
-                ticksize_percent,
-                atr_percent,
-                status
-            )
+            add_coin_to_coins(symbol, ticksize_percent, atr_percent, status)
 
         except Exception as e:
             print(f"⛔️ Error downloading klines for {symbol}: {e}")

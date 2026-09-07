@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 from bot_setup.bot_sender import simple_sender
-from database_v2 import create_renew_size, remove_size
+from database_v2 import create_renew_size, change_size_status
 
 d_room = int(os.getenv("D_ROOM"))
 c_room = int(os.getenv("C_ROOM"))
@@ -185,15 +185,15 @@ class SizesManager:
 
             is_crossed = await self.is_crossed(size_dir, size_price)
             if is_crossed:
-                await asyncio.to_thread(remove_size, self.coin, size_price, 5)
+                await asyncio.to_thread(change_size_status, self.coin, size_price, 5)
                 continue
 
             size_comparison = await self.size_comparison(size_price)
             if isinstance(size_comparison, str):
                 if size_comparison == "removed":
-                    await asyncio.to_thread(remove_size, self.coin, size_price, 4)
+                    await asyncio.to_thread(change_size_status, self.coin, size_price, 4)
                 else:
-                    await asyncio.to_thread(remove_size, self.coin, size_price, 3)
+                    await asyncio.to_thread(change_size_status, self.coin, size_price, 3)
                 continue
 
             size_vs_dom, size_vs_avg = size_comparison
@@ -222,4 +222,4 @@ class SizesManager:
                     )
                     self.alerts[size_price] = minute
             else:
-                await asyncio.to_thread(remove_size, self.coin, size_price, 4)
+                await asyncio.to_thread(change_size_status, self.coin, size_price, 4)

@@ -163,7 +163,7 @@ def get_current_sizes(coin):
     }
 
 
-def remove_size(coin, dom, status):
+def change_size_status(coin, dom, status):
     connection = get_connection()
 
     connection.execute("""
@@ -183,7 +183,7 @@ def remove_size(coin, dom, status):
     connection.close()
 
 
-def disable_coin(coin):
+def unlist_coin_in_sizes(coin):
     connection = get_connection()
 
     connection.execute("""
@@ -201,7 +201,7 @@ def disable_coin(coin):
     connection.close()
 
 
-def update_offline_coins():
+def update_unlisted_coins():
     today = datetime.now().strftime("%d.%m.%y")
 
     connection = get_connection()
@@ -239,6 +239,7 @@ def update_offline_coins():
     connection.commit()
     connection.close()
 
+
 def is_coin_active(coin: str) -> bool:
     connection = get_connection()
 
@@ -252,7 +253,8 @@ def is_coin_active(coin: str) -> bool:
 
     return row is not None
 
-def add_coin(coin: str, tick_size: float, avg_atr: float, status: int):
+
+def add_coin_to_coins(coin: str, tick_size: float, avg_atr: float, status: int):
     connection = get_connection()
 
     connection.execute("""

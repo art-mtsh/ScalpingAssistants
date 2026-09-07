@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from database_v2 import update_offline_coins, create_table, get_coins
+from database_v2 import update_unlisted_coins, create_table, get_coins
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR + '/envs/', "params.env"))
@@ -139,7 +139,7 @@ async def main():
         print("Pause for 30 seconds")
         await asyncio.sleep(30)
 
-        await asyncio.to_thread(update_offline_coins)
+        await asyncio.to_thread(update_unlisted_coins)
 
         live_coins = get_coins()
 

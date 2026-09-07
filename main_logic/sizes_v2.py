@@ -1,8 +1,7 @@
 import asyncio
-from datetime import datetime
 from binance.klines import get_klines
 from binance.order_book import order_book
-from database_v2 import get_current_sizes, is_coin_active, disable_coin
+from database_v2 import get_current_sizes, is_coin_active, unlist_coin_in_sizes
 from main_logic.sizes_check import SizesManager
 from mutual_variables.terminator import terminator
 
@@ -13,6 +12,7 @@ async def main_search(coin, reload_time, repeat_rate):
     while not terminator.is_set():
 
         if not is_coin_active(coin):
+            unlist_coin_in_sizes(coin)
             print(f"Manual ban set for {coin}")
             break
 
@@ -22,7 +22,7 @@ async def main_search(coin, reload_time, repeat_rate):
         the_klines = await get_klines(coin, "1m", "s")
 
         if len(depth) <= 0 or len(the_klines) <= 0:
-            disable_coin(coin)
+            unlist_coin_in_sizes(coin)
             print(f"Status set to break for {coin}")
             break
 
