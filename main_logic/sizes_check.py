@@ -52,7 +52,7 @@ class SizesManager:
         neighbors = lower_sizes + higher_sizes
 
         if not neighbors:
-            return "too_far"
+            raise Exception(f'No neighbors in {self.coin} depth!')
 
         max_neighbor_volume = max(neighbors)
 
