@@ -7,8 +7,8 @@ from database_v2 import create_renew_size, change_size_status
 
 d_room = int(os.getenv("D_ROOM"))
 c_room = int(os.getenv("C_ROOM"))
-size_dom_mpl = float(os.getenv("VOL_MPL_DEPTH"))
-size_avg_mpl = float(os.getenv("SIZE_MPL"))
+size_dom_mpl = float(os.getenv("SIZE_VS_DOM_MPL"))
+size_avg_mpl = float(os.getenv("SIZE_VS_AVG_MPL"))
 wiggle_room_perc = float(os.getenv("WIGGLE_ROOM_PERC"))
 abs_dis = float(os.getenv("ABS_DIS"))
 
