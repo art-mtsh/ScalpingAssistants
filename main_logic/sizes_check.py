@@ -214,8 +214,7 @@ class SizesManager:
                 )
                 minute = datetime.now().strftime("%H:%M")
 
-                repeat_mpl = int(os.getenv('REPEAT_COUNTER'))
-                if continuous_count >= repeat_rate * repeat_mpl and self.alerts.get(size_price) != minute:
+                if self.alerts.get(size_price) != minute:
                     await simple_sender(
                         f"{self.coin}, "
                         f"counter={continuous_count}, "
