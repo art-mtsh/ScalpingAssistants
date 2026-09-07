@@ -81,7 +81,7 @@ def calculate_reload_time(coins_number: int) -> tuple[int, int]:
 
     cycle_weight = (depth_weight + klines_weight) * coins_number
 
-    reload_time = int((cycle_weight * 60 / 6000) * 1.2)  # 1.2 - збільшення часу очікування задля безпеки
+    reload_time = int((cycle_weight * 60 / 6000) * 1.5)  # 1.2 - збільшення часу очікування задля безпеки
 
     reload_time = 10 if reload_time < 10 else reload_time
     repeat_rate = max(int(60 / reload_time), 2)
@@ -148,7 +148,7 @@ async def main():
         print(f'Starting with {len(live_coins)} coins, reload time: {reload_time} and repeat: {repeat_rate}')
 
         search_tasks = [
-            asyncio.create_task(main_search(coin, reload_time, repeat_rate))
+            asyncio.create_task(main_search(coin, reload_time))
             for coin in live_coins
         ]
 

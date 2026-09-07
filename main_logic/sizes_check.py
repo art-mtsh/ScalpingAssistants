@@ -167,7 +167,7 @@ class SizesManager:
                 return False
         return True
 
-    async def update_existing(self, current_sizes: dict, repeat_rate: int):
+    async def update_existing(self, current_sizes: dict):
         """
         1-Open
         2-Open/Crossed
