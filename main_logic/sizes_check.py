@@ -1,5 +1,6 @@
 import asyncio
 import os
+from datetime import datetime
 
 from bot_setup.bot_sender import simple_sender
 from database_v2 import create_renew_size, remove_size
@@ -26,6 +27,7 @@ class SizesManager:
         self.new_sizes = dict()
         self.new_extremums = set()
         self.existing_sizes = set()
+        self.alerts = dict()
 
     async def size_comparison(self, size_price):
 
@@ -209,12 +211,15 @@ class SizesManager:
                     size_vs_dom,  # колонка size_vs_dom
                     size_vs_avg,  # колонка size_vs_dom
                 )
-                if continuous_count >= repeat_rate:
+                minute = datetime.now().strftime("%H:%M")
+
+                if continuous_count >= repeat_rate and self.alerts.get(size_price) != minute:
                     await simple_sender(
                         f"{self.coin}, "
                         f"counter={continuous_count}, "
                         f"size_price={size_price}, "
                         f"size_dir={'up' if size_dir == 1 else 'down'}"
                     )
+                    self.alerts[size_price] = minute
             else:
                 await asyncio.to_thread(remove_size, self.coin, size_price, 4)
