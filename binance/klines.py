@@ -25,8 +25,11 @@ async def get_klines(symbol, frame, market_type: str) -> tuple:
                 response_length = len(response_data) if response_data else 0
 
                 w = int(response.headers.get('x-mbx-used-weight-1m', 1000))
-                if w > 2000:
-                    raise ConnectionError('Too close to the limit. 429')
+                print(f'w={w}')
+                if w > 3000:
+                    print(f"WARNING! Klines request reached {w}")
+                elif w > 5000:
+                    raise ConnectionError(f"Too close to the 429 limit: {w}")
 
                 if response_length >= min_klines_len:
                     c_time = [float(i[0]) for i in response_data]
