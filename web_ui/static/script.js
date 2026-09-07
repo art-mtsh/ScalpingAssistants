@@ -75,10 +75,10 @@ function render() {
     ? allRows.filter(r => (r.coin || '').toLowerCase().includes(q))
     : allRows;
 
-  rowCountEl.textContent = `Рядків: ${filtered.length} / ${allRows.length}`;
+  rowCountEl.textContent = `Rows: ${filtered.length} / ${allRows.length}`;
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="12" class="empty">Немає даних</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" class="empty">No data</td></tr>';
     return;
   }
 
@@ -126,11 +126,11 @@ async function fetchData() {
     errorBanner.style.display = 'none';
     allRows = data.rows || [];
     repeatCounter = data.repeat_counter ?? repeatCounter;
-    lastUpdateEl.textContent = 'Оновлено: ' + new Date().toLocaleTimeString();
+    lastUpdateEl.textContent = 'Updated: ' + new Date().toLocaleTimeString();
     render();
   } catch (e) {
     errorBanner.style.display = 'block';
-    errorBanner.textContent = "Немає з'єднання з сервером";
+    errorBanner.textContent = "No server connection";
   }
 }
 

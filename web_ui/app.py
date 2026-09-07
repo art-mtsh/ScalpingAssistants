@@ -153,7 +153,7 @@ def api_toggle_coin(coin):
 
         if row is None:
             conn.close()
-            return jsonify({"error": f"Монету {coin} не знайдено"}), 404
+            return jsonify({"error": f"Coin {coin} not found"}), 404
 
         new_status = 0 if row["status"] == 3 else 3
         conn.execute(

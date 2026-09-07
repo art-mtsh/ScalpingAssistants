@@ -47,10 +47,10 @@ function render() {
     ? allCoins.filter(c => (c.coin || '').toLowerCase().includes(q))
     : allCoins;
 
-  rowCountEl.textContent = `Монет: ${filtered.length} / ${allCoins.length}`;
+  rowCountEl.textContent = `Coins: ${filtered.length} / ${allCoins.length}`;
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty">Немає монет</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No coins</td></tr>';
     return;
   }
 
@@ -79,7 +79,7 @@ async function fetchCoins() {
 
     if (!res.ok || data.error) {
       errorBanner.style.display = 'block';
-      errorBanner.textContent = data.error || 'Помилка завантаження монет';
+      errorBanner.textContent = data.error || 'Coin load error';
       return;
     }
 
@@ -88,7 +88,7 @@ async function fetchCoins() {
     render();
   } catch (e) {
     errorBanner.style.display = 'block';
-    errorBanner.textContent = "Немає з'єднання з сервером";
+    errorBanner.textContent = "No server connection";
   }
 }
 
@@ -114,7 +114,7 @@ async function toggleCoin(coin) {
       showToast(`${coin}: увімкнено`, 'success');
     }
   } catch (e) {
-    showToast("Немає з'єднання з сервером", 'error');
+    showToast("No server connection", 'error');
   }
 }
 
