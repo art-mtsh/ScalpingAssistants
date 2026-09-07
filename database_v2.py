@@ -183,6 +183,24 @@ def remove_size(coin, dom, status):
     connection.close()
 
 
+def disable_coin(coin):
+    connection = get_connection()
+
+    connection.execute("""
+        UPDATE sizes
+        SET 
+            status = 6,
+            continuous_count = 0
+        WHERE date = ? AND coin = ?
+    """, (
+        datetime.now().strftime("%d.%m.%y"),
+        coin
+    ))
+
+    connection.commit()
+    connection.close()
+
+
 def update_offline_coins():
     today = datetime.now().strftime("%d.%m.%y")
 
