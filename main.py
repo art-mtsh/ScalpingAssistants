@@ -95,8 +95,8 @@ def params_for_bot():
 
                                      f"Filter's timeframe: {os.getenv("TF")}m\n"
                                      f"Update time: {os.getenv('UPDATE_TIME_HOURS')} hr\n"
-                                     f"Ticksize filter: {os.getenv("TICKSIZE_FILTER")}\n"
-                                     f"ATR filter: {os.getenv("ATR_FILTER")}\n"
+                                     f"Ticksize filter: <{os.getenv("TICKSIZE_FILTER")}%\n"
+                                     f"ATR filter: >{os.getenv("ATR_FILTER")}%\n"
                                      f"Pairs limit: {os.getenv("PAIRS_LIMIT")}\n"
                                      f"Spot verified: {os.getenv("SPOT_VERIFIED")}\n\n"
 
