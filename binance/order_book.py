@@ -7,7 +7,7 @@ from bot_setup.bot_setup import bot
 from database_v2 import set_coin_status
 
 
-async def order_book(symbol, market_type: str) -> list:
+async def order_book(symbol, market_type: str) -> list[list[float]]:
     perfect_depth_len = int(os.getenv('DEPTH_LEN'))
     min_depth_len = int(os.getenv('MIN_DEPTH_LEN'))
 
@@ -30,28 +30,28 @@ async def order_book(symbol, market_type: str) -> list:
                 response_data = await response.json()
 
                 if len(response_data['bids']) >= min_depth_len and len(response_data['asks']) >= min_depth_len:
+
                     bids = response_data.get('bids')
                     asks = response_data.get('asks')
-                    close = float(asks[0][0])
+                    # close = float(asks[0][0])
+
+                    all_prices = [item[0] for item in bids + asks]
+                    # max_decimal = max(len(price.rstrip('0').split('.')[-1]) for price in all_prices)
 
                     combined_list = [[float(item[0]), float(item[1])] for item in reversed(asks)]
                     for item in bids:
                         combined_list.append([float(item[0]), float(item[1])])
-                    combined_list_sorted = sorted(combined_list, key=lambda x: x[1])
-
-                    decimal_1 = len(str(combined_list[12][0]).split('.')[-1].rstrip('0'))
-                    decimal_2 = len(str(combined_list[34][0]).split('.')[-1].rstrip('0'))
-                    decimal_3 = len(str(combined_list[23][0]).split('.')[-1].rstrip('0'))
-                    max_decimal = max([decimal_1, decimal_2, decimal_3])
+                    combined_list_sorted_by_price = sorted(combined_list, key=lambda x: x[0])
 
                     if len(bids) == 0 or len(asks) == 0:
                         print(f'Missing bids/asks for {symbol}: bids={len(bids)}, asks={len(asks)}')
                         return []
                     else:
-                        return [close, combined_list, combined_list_sorted, max_decimal]
+                        return combined_list_sorted_by_price
 
                 else:
-                    print(f'Not full order book for {symbol}: bids={len(response_data['bids'])}, asks={len(response_data['asks'])}')
+                    print(
+                        f'Not full order book for {symbol}: bids={len(response_data['bids'])}, asks={len(response_data['asks'])}')
                     set_coin_status(symbol, 2)
                     print(f'Added {symbol} to ignore list')
                     return []

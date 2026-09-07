@@ -12,6 +12,7 @@ PngImagePlugin.DEBUG = 0
 
 import matplotlib
 import traceback
+from datetime import datetime
 from main_log_config import setup_logger
 from bot_setup.bot_poller import poll
 from main_logic.sizes_v2 import *
