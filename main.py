@@ -107,7 +107,7 @@ def params_for_bot():
                                      f"Klines (min) length: {os.getenv("MIN_KLINES_LEN")}\n"
                                      f"Room to the left: {os.getenv("C_ROOM")}\n"
                                      f"Room upper/lower in DOM: {os.getenv("D_ROOM")}\n"
-                                     f"Wiggle room: {(os.getenv("WIGGLE_ROOM_PERC") * 100)}%\n"
+                                     f"Wiggle room: {float(os.getenv("WIGGLE_ROOM_PERC")) * 100}%\n"
                                      f"Absolute dis: {os.getenv("ABS_DIS")}\n\n"
                                      f"Size among others: x{os.getenv("SIZE_MPL")}\n"
                                      f"Size x Vol mpl (DOM): x{os.getenv("VOL_MPL_DEPTH")}\n"

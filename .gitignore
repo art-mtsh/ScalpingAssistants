@@ -9,3 +9,4 @@ __pycache__/
 /envs/ignore_coins.csv
 .idea/ScalpingAssistants.iml
 .idea/ScalpingAssistants.iml
+/sizes.db
