@@ -14,6 +14,16 @@ async def fetch_klines(session, url) -> dict:
 
         return await response.json() if response.status == 200 else {}
 
+def calculate_tick_size(high, low, close):
+    prices = sorted(set(high + low + close))
+
+    differences = [
+        current - previous
+        for previous, current in zip(prices, prices[1:])
+        if current - previous > 0
+    ]
+
+    return min(differences) if differences else 0
 
 async def get_trading_symbols(session, asset):
     """Отримує торгові символи Futures з перевіркою Spot, якщо увімкнено."""
@@ -108,6 +118,8 @@ async def calculate_pairs(
             ) / len(close)
 
             atr_percent = round(atr_percent, 4)
+
+            tick_size = calculate_tick_size(high, low, close)
 
             ticksize_percent = float(tick_size) / (close[-1] / 100)
             ticksize_percent = round(ticksize_percent, 4)
