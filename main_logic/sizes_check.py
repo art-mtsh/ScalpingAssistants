@@ -34,13 +34,14 @@ class SizesManager:
         min_price = self.depth[0][0]
         max_price = self.depth[-1][0]
 
+        if not min_price <= size_price <= max_price:
+            return "too_far"
+
         price_index = next((i for i, item in enumerate(self.depth) if item[0] == size_price), None)
         size_volume = next((item[1] for item in self.depth if item[0] == size_price), None)
 
         if price_index is None or size_volume is None:
-            if min_price <= size_price <= max_price:
-                return "removed"
-            return "too_far"
+            return "removed"
 
         lower_start = max(0, price_index - d_room)
         lower_sizes = [self.depth[k][1] for k in range(lower_start, price_index)]

@@ -27,9 +27,8 @@ async def main_search(coin, reload_time, repeat_rate):
             break
 
         (c_time, c_open, c_high, c_low, c_close, avg_vol, buy_vol, sell_vol, cumulative_delta, cd_sma) = the_klines
-        depth = depth[1]  # [[ціна, об'єм], [ціна, об'єм], ...]
 
-        sizes_manager.depth = depth
+        sizes_manager.depth = depth[1] # [[ціна, об'єм], [ціна, об'єм], ...]
         sizes_manager.current_price = c_close[-1]
         sizes_manager.c_high = c_high
         sizes_manager.c_low = c_low
