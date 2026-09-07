@@ -31,8 +31,8 @@ class SizesManager:
 
     async def size_comparison(self, size_price):
 
-        min_price = self.depth[0][0]
-        max_price = self.depth[-1][0]
+        min_price = min(self.depth[0][0], self.depth[-1][0])
+        max_price = max(self.depth[0][0], self.depth[-1][0])
 
         if not min_price <= size_price <= max_price:
             return "too_far"
