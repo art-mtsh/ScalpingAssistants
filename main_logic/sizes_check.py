@@ -1,6 +1,7 @@
 import asyncio
 import os
 
+from bot_setup.bot_sender import simple_sender
 from database_v2 import create_renew_size, remove_size
 
 d_room = int(os.getenv("D_ROOM"))
@@ -156,7 +157,7 @@ class SizesManager:
                 return False
         return True
 
-    async def update_existing(self, current_sizes: dict):
+    async def update_existing(self, current_sizes: dict, repeat_rate: int):
         """
         1-Open
         2-Open/Crossed
@@ -169,7 +170,7 @@ class SizesManager:
             # size_date = params['date']
             # size_chart = params['chart']
             size_dir = params['direction']
-            # continuous_count = params['continuous_count']
+            continuous_count = params['continuous_count']
             # total_count = params['total_count']
             # status = params['status']
 
@@ -198,5 +199,12 @@ class SizesManager:
                     size_vs_dom,  # колонка size_vs_dom
                     size_vs_avg,  # колонка size_vs_dom
                 )
+                if continuous_count >= repeat_rate:
+                    await simple_sender(
+                        f"{self.coin}, "
+                        f"counter={continuous_count}, "
+                        f"size_price={size_price}, "
+                        f"size_dir={'up' if size_dir == 1 else 'down'}, "
+                    )
             else:
                 await asyncio.to_thread(remove_size, self.coin, size_price, 4)

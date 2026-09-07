@@ -64,8 +64,9 @@ async def healthcheck_pinger():
 
             await asyncio.sleep(600)
 
-def calculate_reload_time(coins_number: int) -> int:
-    depth_len =  int(os.getenv('DEPTH_LEN'))
+
+def calculate_reload_time(coins_number: int) -> tuple[int, int]:
+    depth_len = int(os.getenv('DEPTH_LEN'))
 
     if depth_len <= 100:
         depth_weight = 5
@@ -80,10 +81,13 @@ def calculate_reload_time(coins_number: int) -> int:
 
     cycle_weight = (depth_weight + klines_weight) * coins_number
 
-    reload_time = cycle_weight * 60 / 6000
-    reload_time = 10 if reload_time < 10 else reload_time
+    reload_time = int((cycle_weight * 60 / 6000) * 1.2)  # 1.2 - збільшення часу очікування задля безпеки
 
-    return max(1, int(reload_time * 0.8)) # 0.8 - коефіцієнт безпеки
+    reload_time = 10 if reload_time < 10 else reload_time
+    repeat_rate = max(int(60 / reload_time), 2)
+
+    return reload_time, repeat_rate
+
 
 def params_for_bot():
     starting_parameters['upd_time'] = datetime.now().replace(microsecond=0)
@@ -103,7 +107,7 @@ def params_for_bot():
                                      f"Klines (min) length: {os.getenv("MIN_KLINES_LEN")}\n"
                                      f"Room to the left: {os.getenv("C_ROOM")}\n"
                                      f"Room upper/lower in DOM: {os.getenv("D_ROOM")}\n"
-                                     f"Wiggle room: {(os.getenv("WIGGLE_ROOM_PERC")*100)}%\n"
+                                     f"Wiggle room: {(os.getenv("WIGGLE_ROOM_PERC") * 100)}%\n"
                                      f"Absolute dis: {os.getenv("ABS_DIS")}\n\n"
                                      f"Size among others: x{os.getenv("SIZE_MPL")}\n"
                                      f"Size x Vol mpl (DOM): x{os.getenv("VOL_MPL_DEPTH")}\n"
@@ -139,12 +143,12 @@ async def main():
 
         live_coins = get_coins()
 
-        reload_time = calculate_reload_time(len(live_coins))
+        reload_time, repeat_rate = calculate_reload_time(len(live_coins))
 
-        print(f'Starting with {len(live_coins)} coins and reload time: {reload_time}')
+        print(f'Starting with {len(live_coins)} coins, reload time: {reload_time} and repeat: {repeat_rate}')
 
         search_tasks = [
-            asyncio.create_task(main_search(coin, reload_time))
+            asyncio.create_task(main_search(coin, reload_time, repeat_rate))
             for coin in live_coins
         ]
 

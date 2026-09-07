@@ -8,6 +8,14 @@ from mutual_variables.terminator import terminator
 
 sent_message_id = None
 
+
+async def simple_sender(msg):
+    await bot.send_message(
+        chat_id=os.getenv('CHAT_ID'),
+        text=msg,
+    )
+
+
 async def sender(msg):
     """Send a new message, deleting the old one if it exists."""
     global sent_message_id
@@ -16,7 +24,7 @@ async def sender(msg):
             await bot.delete_message(chat_id=os.getenv('CHAT_ID'), message_id=sent_message_id)
 
         import html
-        text = f"<pre>{html.escape(msg)}</pre>"   # preserves spacing + monospace
+        text = f"<pre>{html.escape(msg)}</pre>"  # preserves spacing + monospace
 
         message = await bot.send_message(
             chat_id=os.getenv('CHAT_ID'),
@@ -83,4 +91,3 @@ async def update_message_every_x_seconds(update_lock):
             await asyncio.sleep(20)
 
         await asyncio.sleep(1)
-

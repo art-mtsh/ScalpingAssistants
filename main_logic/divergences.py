@@ -13,11 +13,7 @@ PRICE_RANGE_PART = int(os.getenv("PRICE_RANGE_PART"))
 DELTA_WINDOW = int(os.getenv("DELTA_WINDOW"))
 
 
-async def simple_sender(msg):
-    await bot.send_message(
-        chat_id=os.getenv('CHAT_ID'),
-        text=msg,
-    )
+
 
 
 async def divergences_search(coin):
