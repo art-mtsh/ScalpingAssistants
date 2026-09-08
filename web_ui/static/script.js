@@ -75,10 +75,11 @@ function render() {
     ? allRows.filter(r => (r.coin || '').toLowerCase().includes(q))
     : allRows;
 
-  rowCountEl.textContent = `Rows: ${filtered.length} / ${allRows.length}`;
+  const activeCount = allRows.filter(r => Number(r.status) === 1).length;
+  rowCountEl.textContent = `Active: ${activeCount}/${allRows.length}`;
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="12" class="empty">No data</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" class="empty">Немає даних</td></tr>';
     return;
   }
 
@@ -137,12 +138,12 @@ async function fetchData() {
 searchInput.addEventListener('input', render);
 
 function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme.js', theme);
+  document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('sizes_theme', theme);
 }
 
 themeToggle.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme.js');
+  const current = document.documentElement.getAttribute('data-theme');
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
 

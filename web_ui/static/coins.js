@@ -47,10 +47,11 @@ function render() {
     ? allCoins.filter(c => (c.coin || '').toLowerCase().includes(q))
     : allCoins;
 
-  rowCountEl.textContent = `Coins: ${filtered.length} / ${allCoins.length}`;
+  const activeCount = allCoins.filter(c => c.status === 1).length;
+  rowCountEl.textContent = `Active: ${activeCount}/${allCoins.length}`;
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty">No coins</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">Немає монет</td></tr>';
     return;
   }
 
