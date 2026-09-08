@@ -17,7 +17,7 @@ const rowCountEl = document.getElementById('rowCount');
 const lastUpdateEl = document.getElementById('lastUpdate');
 const errorBanner = document.getElementById('errorBanner');
 
-function fmtNum(v, digits = 4) {
+function fmtNum(v, digits = 7) {
   if (v === null || v === undefined || v === '') return '';
   const n = Number(v);
   if (Number.isNaN(n)) return v;
