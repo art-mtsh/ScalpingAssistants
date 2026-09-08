@@ -16,7 +16,6 @@ const searchInput = document.getElementById('search');
 const rowCountEl = document.getElementById('rowCount');
 const lastUpdateEl = document.getElementById('lastUpdate');
 const errorBanner = document.getElementById('errorBanner');
-const themeToggle = document.getElementById('themeToggle');
 
 function fmtNum(v, digits = 4) {
   if (v === null || v === undefined || v === '') return '';
@@ -136,21 +135,6 @@ async function fetchData() {
 }
 
 searchInput.addEventListener('input', render);
-
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('sizes_theme', theme);
-}
-
-themeToggle.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme');
-  applyTheme(current === 'dark' ? 'light' : 'dark');
-});
-
-(function initTheme() {
-  const saved = localStorage.getItem('sizes_theme');
-  applyTheme(saved === 'light' ? 'light' : 'dark');
-})();
 
 fetchData();
 setInterval(fetchData, 1000);
