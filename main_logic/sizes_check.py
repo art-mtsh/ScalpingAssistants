@@ -167,7 +167,7 @@ class SizesManager:
                 return False
         return True
 
-    async def update_existing(self, current_sizes: dict):
+    async def update_existing(self, current_sizes: dict, repeat_rate: int):
         """
         1-Open
         2-Open/Crossed
@@ -212,9 +212,12 @@ class SizesManager:
                     size_vs_dom,  # колонка size_vs_dom
                     size_vs_avg,  # колонка size_vs_dom
                 )
-                minute = datetime.now().strftime("%H:%M")
 
-                if self.alerts.get(size_price) != minute:
+                minute = datetime.now().strftime("%H:%M")
+                repeated_enough_times = continuous_count >= repeat_rate
+                didnt_alerted_this_minute = self.alerts.get(size_price) != minute
+
+                if repeated_enough_times and didnt_alerted_this_minute:
                     await simple_sender(
                         f"{self.coin}, "
                         f"counter={continuous_count}, "

@@ -6,7 +6,7 @@ from main_logic.sizes_check import SizesManager
 from mutual_variables.terminator import terminator
 
 
-async def main_search(coin, reload_time):
+async def main_search(coin, reload_time, repeat_rate):
     sizes_manager = SizesManager(coin)
 
     while not terminator.is_set():
@@ -37,7 +37,7 @@ async def main_search(coin, reload_time):
         sizes_manager.existing_sizes = set(current_sizes.keys())
 
         if current_sizes:
-            await sizes_manager.update_existing(current_sizes)
+            await sizes_manager.update_existing(current_sizes, repeat_rate)
 
         await sizes_manager.new_sizes_search()
         await sizes_manager.new_extremums_search()
