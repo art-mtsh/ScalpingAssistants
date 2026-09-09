@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 
 DB_FILE = "sizes.db"
 
@@ -203,6 +203,7 @@ def unlist_coin_in_sizes(coin):
 
 def update_unlisted_coins():
     today = datetime.now().strftime("%d.%m.%y")
+    yesterday = (datetime.now() - timedelta(days=1)).strftime("%d.%m.%y")
 
     connection = get_connection()
 
@@ -235,6 +236,11 @@ def update_unlisted_coins():
               WHERE status = 1
           )
     """, (today,))
+
+    connection.execute("""
+        DELETE FROM sizes
+        WHERE date = ?
+    """, (yesterday,))
 
     connection.commit()
     connection.close()

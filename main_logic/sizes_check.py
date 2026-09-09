@@ -214,13 +214,13 @@ class SizesManager:
                 )
 
                 minute = datetime.now().strftime("%H:%M")
-                repeated_enough_times = continuous_count >= repeat_rate
+                repeated_enough_times = continuous_count % repeat_rate == 0
                 didnt_alerted_this_minute = self.alerts.get(size_price) != minute
 
                 if repeated_enough_times and didnt_alerted_this_minute:
                     await simple_sender(
-                        f"{self.coin}, "
-                        f"counter={continuous_count}, "
+                        f"{self.coin}\n"
+                        f"counter={continuous_count} (repeat rate={repeat_rate})\n"
                         f"size_price={size_price}, "
                         f"size_dir={'up' if size_dir == 1 else 'down'}"
                     )
