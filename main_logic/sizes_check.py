@@ -221,8 +221,9 @@ class SizesManager:
                     await simple_sender(
                         f"{self.coin}\n"
                         f"counter={continuous_count} (repeat rate={repeat_rate})\n"
-                        f"size_price={size_price}, "
-                        f"size_dir={'up' if size_dir == 1 else 'down'}"
+                        f"size_price={size_price}\n"
+                        f"size_dist={round(size_dist, 2)}%\n"
+                        f"size_dir={'📈' if size_dir == 1 else '📉'}"
                     )
                     self.alerts[size_price] = minute
             else:
