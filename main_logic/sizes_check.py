@@ -180,8 +180,8 @@ class SizesManager:
             # size_date = params['date']
             # size_chart = params['chart']
             size_dir = params['direction']
-            continuous_count = params['continuous_count']
-            # total_count = params['total_count']
+            continuous_count = params['continuous_count'] + 1
+            total_count = params['total_count'] + 1
             # status = params['status']
 
             is_crossed = await self.is_crossed(size_dir, size_price)
@@ -220,7 +220,7 @@ class SizesManager:
                 if repeated_enough_times and didnt_alerted_this_minute:
                     await simple_sender(
                         f"{self.coin}\n"
-                        f"counter={continuous_count} (repeat rate={repeat_rate})\n"
+                        f"counter={continuous_count}/{total_count} (repeat rate={repeat_rate})\n"
                         f"size_price={size_price}\n"
                         f"size_dist={round(size_dist, 2)}%\n"
                         f"size_dir={'📈' if size_dir == 1 else '📉'}"
