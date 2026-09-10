@@ -184,6 +184,8 @@ class SizesManager:
             total_count = params['total_count']
             # status = params['status']
 
+            size_dist = await self.calc_distance(size_dir, size_price)
+
             is_crossed = await self.is_crossed(size_dir, size_price)
             if is_crossed:
                 await asyncio.to_thread(change_size_status, self.coin, size_price, 5)
@@ -197,10 +199,13 @@ class SizesManager:
                     await asyncio.to_thread(change_size_status, self.coin, size_price, 3)
                 continue
 
+            if size_dist > abs_dis:
+                await asyncio.to_thread(change_size_status, self.coin, size_price, 3)
+                continue
+
             size_vs_dom, size_vs_avg = size_comparison
             if size_vs_dom >= size_dom_mpl and size_vs_avg >= size_avg_mpl:
 
-                size_dist = await self.calc_distance(size_dir, size_price)
                 await asyncio.to_thread(
                     create_renew_size,
                     self.coin,  # колонка coin
