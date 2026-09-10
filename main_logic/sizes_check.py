@@ -180,8 +180,8 @@ class SizesManager:
             # size_date = params['date']
             # size_chart = params['chart']
             size_dir = params['direction']
-            continuous_count = params['continuous_count'] + 1
-            total_count = params['total_count'] + 1
+            continuous_count = params['continuous_count']
+            total_count = params['total_count']
             # status = params['status']
 
             is_crossed = await self.is_crossed(size_dir, size_price)
@@ -214,6 +214,8 @@ class SizesManager:
                 )
 
                 minute = datetime.now().strftime("%H:%M")
+                continuous_count += 1
+                total_count += 1
                 repeated_enough_times = continuous_count % repeat_rate == 0
                 didnt_alerted_this_minute = self.alerts.get(size_price) != minute
 
