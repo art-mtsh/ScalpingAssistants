@@ -219,11 +219,6 @@ def update_unlisted_coins():
         WHERE NOT status = 1
     """).fetchall()
 
-    print("Coins with status 1:")
-    print([(row["coin"]) for row in rows_1])
-    print("Coins with status not 1:")
-    print([(row["coin"]) for row in rows_other])
-
     connection.execute("""
         UPDATE sizes
         SET

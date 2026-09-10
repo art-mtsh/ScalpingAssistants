@@ -10,7 +10,6 @@ c_room = int(os.getenv("C_ROOM"))
 size_dom_mpl = float(os.getenv("SIZE_VS_DOM_MPL"))
 size_avg_mpl = float(os.getenv("SIZE_VS_AVG_MPL"))
 wiggle_room_perc = float(os.getenv("WIGGLE_ROOM_PERC"))
-abs_dis = float(os.getenv("ABS_DIS"))
 
 
 class SizesManager:
@@ -18,6 +17,8 @@ class SizesManager:
     def __init__(self, coin):
 
         self.coin = coin
+        self.tick_size = None
+        self.avg_atr = None
         self.depth = dict()
         self.current_price = None
         self.c_high = None
@@ -143,7 +144,7 @@ class SizesManager:
             size_dir = 1 if size_price >= self.current_price else 0
 
             size_dist = await self.calc_distance(size_dir, size_price)
-            distances_verified = 0 < size_dist <= abs_dis
+            distances_verified = 0 < size_dist <= self.avg_atr * 3
 
             if distances_verified and size_price not in self.existing_sizes:
                 await asyncio.to_thread(
@@ -199,7 +200,7 @@ class SizesManager:
                     await asyncio.to_thread(change_size_status, self.coin, size_price, 3)
                 continue
 
-            if size_dist > abs_dis:
+            if size_dist > self.avg_atr * 3:
                 await asyncio.to_thread(change_size_status, self.coin, size_price, 3)
                 continue
 
@@ -221,10 +222,12 @@ class SizesManager:
                 minute = datetime.now().strftime("%H:%M")
                 continuous_count += 1
                 total_count += 1
-                repeated_enough_times = continuous_count % repeat_rate == 0
-                didnt_alerted_this_minute = self.alerts.get(size_price) != minute
 
-                if repeated_enough_times and didnt_alerted_this_minute:
+                repeated_enough_times = continuous_count >= repeat_rate
+                didnt_alerted_this_minute = self.alerts.get(size_price) != minute
+                distance_within_atr = size_dist <= self.avg_atr
+
+                if repeated_enough_times and didnt_alerted_this_minute and distance_within_atr:
                     await simple_sender(
                         f"{self.coin}\n"
                         f"counter={continuous_count}/{total_count} (repeat rate={repeat_rate})\n"

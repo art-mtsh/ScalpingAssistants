@@ -6,7 +6,7 @@ from main_logic.sizes_check import SizesManager
 from mutual_variables.terminator import terminator
 
 
-async def main_search(coin, reload_time, repeat_rate):
+async def main_search(coin, params, reload_time, repeat_rate):
     sizes_manager = SizesManager(coin)
 
     while not terminator.is_set():
@@ -17,17 +17,18 @@ async def main_search(coin, reload_time, repeat_rate):
             break
 
         current_sizes: dict = get_current_sizes(coin)
-
         depth = await order_book(coin, "s")
         the_klines = await get_klines(coin, "1m", "s")
 
         if len(depth) <= 0 or len(the_klines) <= 0:
             unlist_coin_in_sizes(coin)
-            print(f"Status set to break for {coin}")
+            print(f"Auto ban set for {coin}")
             break
 
         (c_time, c_open, c_high, c_low, c_close, avg_vol, buy_vol, sell_vol, cumulative_delta, cd_sma) = the_klines
 
+        sizes_manager.tick_size = params['tick_size']
+        sizes_manager.avg_atr = params['avg_atr']
         sizes_manager.depth = depth # [[ціна, об'єм], [ціна, об'єм], ...]
         sizes_manager.current_price = c_close[-1]
         sizes_manager.c_high = c_high

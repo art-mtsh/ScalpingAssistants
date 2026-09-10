@@ -148,8 +148,8 @@ async def main():
         print(f'Starting with {len(live_coins)} coins, reload time: {reload_time} and repeat: {repeat_rate}')
 
         search_tasks = [
-            asyncio.create_task(main_search(coin, reload_time, repeat_rate))
-            for coin in live_coins
+            asyncio.create_task(main_search(coin, params, reload_time, repeat_rate))
+            for coin, params in live_coins.items()
         ]
 
         await asyncio.gather(*search_tasks)
